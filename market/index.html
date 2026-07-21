@@ -26,8 +26,8 @@
 <meta property="og:site_name" content="严亨明的博客">
 <meta property="og:description" content="加密行情实验室 · 恐惧贪婪指数 · 全球资产市值排行榜 · 假如当时上车计算器">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-07-21T16:27:27.545Z">
-<meta property="article:modified_time" content="2026-07-21T16:27:27.545Z">
+<meta property="article:published_time" content="2026-07-21T17:06:08.431Z">
+<meta property="article:modified_time" content="2026-07-21T17:06:08.431Z">
 <meta property="article:author" content="严亨明">
 <meta property="article:tag" content="严亨明, 博客, 技术, 生活, 随笔">
 <meta name="twitter:card" content="summary_large_image">
@@ -386,7 +386,7 @@
 <article class="page-content">
   <div id="market-app">
   <div class="market-header">
-    <p class="market-intro">一个会说人话的加密行情实验室 —— 看情绪、比市值、算收益。加密与金银数据实时更新。</p>
+    <p class="market-intro">一个会说人话的加密行情实验室 —— 看情绪、比市值、算收益。行情优先走 OKX（国内可直连），失败自动回退。</p>
     <div class="market-toolbar">
       <span id="market-updated" class="market-updated"></span>
       <button id="market-refresh" class="market-refresh" title="立即刷新">↻ 刷新</button>
@@ -419,7 +419,7 @@
     <h2 class="section-title">🌍 全球资产市值排行榜</h2>
     <div id="rank-headline" class="rank-headline"></div>
     <div id="rank-list" class="rank-list"></div>
-    <p class="rank-note">💡 加密资产为 CoinGecko 实时数据，黄金 / 白银为每日现货价（gold-api.com）实时折算；股票为参考快照（截至 2026 年 7 月），仅供娱乐对比，非投资依据。</p>
+    <p class="rank-note">💡 加密资产为交易所实时价格折算市值；黄金 / 白银为每日现货价折算；股票为参考快照（截至 2026 年 7 月），仅供娱乐对比，非投资依据。</p>
   </section>
 
   <!-- 假如当时上车 -->
@@ -437,10 +437,10 @@
       <input id="calc-amount" type="number" min="1" step="100" value="1000" style="width:110px;">
       <span>美元买了</span>
       <select id="calc-coin">
-        <option value="bitcoin">比特币 BTC</option>
-        <option value="ethereum">以太坊 ETH</option>
-        <option value="solana">Solana SOL</option>
-        <option value="dogecoin">狗狗币 DOGE</option>
+        <option value="BTC-USDT">比特币 BTC</option>
+        <option value="ETH-USDT">以太坊 ETH</option>
+        <option value="SOL-USDT">Solana SOL</option>
+        <option value="DOGE-USDT">狗狗币 DOGE</option>
       </select>
       <button id="calc-btn" class="calc-btn">算一算</button>
     </div>
@@ -508,7 +508,7 @@ html[data-user-color-scheme="dark"] .rank-name { color:#e2e8f0; }
 @keyframes rankPulse { 0%,100%{opacity:1;} 50%{opacity:.3;} }
 .rank-bar { margin-top:.35rem; height:5px; background:#edf2f7; border-radius:3px; overflow:hidden; }
 html[data-user-color-scheme="dark"] .rank-bar { background:#374151; }
-.rank-bar span { display:block; height:100%; background:linear-gradient(90deg,#5b7cfa,#7c9cff); border-radius:3px; }
+.rank-bar span { display:block; height:100%; background:linear-gradient(90deg,#5b7cfa,#7c9cff); border-radius:3px; transition:width .6s ease; }
 .rank-row.is-btc .rank-bar span { background:linear-gradient(90deg,#f7931a,#ffb454); }
 .rank-cap { flex-shrink:0; text-align:right; font-weight:700; color:#2d3748; font-size:.95rem; }
 html[data-user-color-scheme="dark"] .rank-cap { color:#e2e8f0; }
@@ -535,7 +535,8 @@ html[data-user-color-scheme="dark"] .calc-result { color:#a7a9ad; }
 .coin-card:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,.12); }
 html[data-user-color-scheme="dark"] .coin-card { background:#252d38; }
 .coin-head { display:flex; align-items:center; margin-bottom:.9rem; }
-.coin-logo { width:36px; height:36px; border-radius:50%; margin-right:.7rem; background:#edf2f7; flex-shrink:0; }
+.coin-logo { width:36px; height:36px; border-radius:50%; margin-right:.7rem; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:.66rem; font-weight:800; letter-spacing:-.3px; cursor:pointer; user-select:none; transition:transform .15s; }
+.coin-logo:active { transform:scale(.85); }
 .coin-name { font-weight:600; color:#1a202c; font-size:1.05rem; line-height:1.2; }
 html[data-user-color-scheme="dark"] .coin-name { color:#c4c6c9; }
 .coin-symbol { color:#a0aec0; font-size:.8rem; text-transform:uppercase; }
@@ -549,8 +550,6 @@ html[data-user-color-scheme="dark"] .coin-price { color:#e2e8f0; }
 .coin-mood { margin-top:.6rem; font-size:.82rem; color:#718096; }
 html[data-user-color-scheme="dark"] .coin-mood { color:#9aa4b0; }
 .coin-cap { margin-top:.6rem; font-size:.78rem; color:#a0aec0; display:flex; justify-content:space-between; }
-.coin-logo { cursor:pointer; transition:transform .15s; }
-.coin-logo:active { transform:scale(.85); }
 
 /* ---------- 价格跳动闪动 ---------- */
 @keyframes flashUp { 0%{ background:rgba(22,163,74,.20); } 100%{ background:transparent; } }
@@ -568,11 +567,24 @@ html[data-user-color-scheme="dark"] .egg-toast { background:#0f1419; border:1px 
 
 <script>
 (function() {
-  var COINS = "bitcoin,ethereum,solana,ripple,cardano,dogecoin,avalanche-2,chainlink,litecoin,polkadot";
-  var CG_API = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=" + COINS +
-               "&order=market_cap_desc&sparkline=true&price_change_percentage=24h";
   var REFRESH_MS = 60000;
   var timer = null;
+
+  // 币种：交易对(inst=OKX) / CoinGecko id(cg) + 昵称 + 徽章色 + 流通量（估算市值用，非精确值）
+  var COINS = [
+    { inst:"BTC-USDT",  cg:"bitcoin",     id:"btc",  name:"Bitcoin",   sym:"BTC",  nick:"大饼",   color:"#f7931a", supply:19.9e6,  isBTC:true },
+    { inst:"ETH-USDT",  cg:"ethereum",    id:"eth",  name:"Ethereum",  sym:"ETH",  nick:"以太",   color:"#627eea", supply:120.5e6, isETH:true },
+    { inst:"SOL-USDT",  cg:"solana",      id:"sol",  name:"Solana",    sym:"SOL",  nick:"索拉纳", color:"#14b8a6", supply:470e6 },
+    { inst:"XRP-USDT",  cg:"ripple",      id:"xrp",  name:"XRP",       sym:"XRP",  nick:"瑞波",   color:"#3b4148", supply:58e9 },
+    { inst:"ADA-USDT",  cg:"cardano",     id:"ada",  name:"Cardano",   sym:"ADA",  nick:"艾达",   color:"#0033ad", supply:35.7e9 },
+    { inst:"DOGE-USDT", cg:"dogecoin",    id:"doge", name:"Dogecoin",  sym:"DOGE", nick:"狗狗",   color:"#c2a633", supply:147e9 },
+    { inst:"AVAX-USDT", cg:"avalanche-2", id:"avax", name:"Avalanche", sym:"AVAX", nick:"雪崩",   color:"#e84142", supply:410e6 },
+    { inst:"LINK-USDT", cg:"chainlink",   id:"link", name:"Chainlink", sym:"LINK", nick:"链克",   color:"#2a5ada", supply:640e6 },
+    { inst:"LTC-USDT",  cg:"litecoin",    id:"ltc",  name:"Litecoin",  sym:"LTC",  nick:"莱特",   color:"#345d9d", supply:76e6 },
+    { inst:"DOT-USDT",  cg:"polkadot",    id:"dot",  name:"Polkadot",  sym:"DOT",  nick:"波卡",   color:"#e6007a", supply:1.5e9 }
+  ];
+  var COIN_BY_INST = {};
+  COINS.forEach(function(c) { COIN_BY_INST[c.inst] = c; });
 
   // 地上存量（金衡盎司），乘以每日现货价即得市值。约：黄金 21.6 万吨、白银 100 万吨。
   var GOLD_SUPPLY_OZ = 6.95e9;
@@ -590,9 +602,6 @@ html[data-user-color-scheme="dark"] .egg-toast { background:#0f1419; border:1px 
   ];
   var RANK_KEY = "market-btc-rank";
 
-  // 币种昵称 + 涨跌吐槽
-  var NICK = { btc:"大饼", eth:"以太", sol:"索拉纳", xrp:"瑞波", ada:"艾达",
-               doge:"狗狗", avax:"雪崩", link:"链克", ltc:"莱特", dot:"波卡" };
   function mood(chg) {
     if (chg == null) return "😶 数据缺失";
     if (chg >= 5)  return "🚀 起飞了，追还是不追？";
@@ -606,7 +615,9 @@ html[data-user-color-scheme="dark"] .egg-toast { background:#0f1419; border:1px 
   // 全局状态：加密与金银异步返回，任一到达都重绘排行榜
   var state = { btcCap: null, ethCap: null, goldPrice: null, silverPrice: null };
 
-  // 价格记忆 + 彩蛋状态
+  // 渲染 / 价格记忆 / 彩蛋状态
+  var built = false;
+  var sparkLoaded = false;
   var prevPrices = {};
   var firstCoinLoad = true;
   var lastHourEgg = -1;
@@ -664,6 +675,69 @@ html[data-user-color-scheme="dark"] .egg-toast { background:#0f1419; border:1px 
   }
   function fmtCapCN(v) { return v == null ? "--" : "$" + (v / 1e12).toFixed(2) + " 万亿"; }
   function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+  function pad(n) { return String(n).padStart(2, "0"); }
+  // 带超时的 fetch：某个数据源被墙时不至于长时间卡住，快速回退
+  function fetchJSON(url, ms) {
+    var ctl = ("AbortController" in window) ? new AbortController() : null;
+    var timer2 = ctl ? setTimeout(function() { ctl.abort(); }, ms || 8000) : null;
+    return fetch(url, ctl ? { signal: ctl.signal } : {}).then(function(r) {
+      if (timer2) clearTimeout(timer2);
+      if (!r.ok) throw 0; return r.json();
+    }, function(e) { if (timer2) clearTimeout(timer2); throw e; });
+  }
+
+  // ============ 数据源（按顺序尝试，谁通用谁）============
+  var BAR_MAP = { "30": ["1D", 30], "90": ["1D", 90], "180": ["3D", 60], "365": ["1W", 52] };
+  var okxSource = {
+    name: "OKX",
+    base: "https://www.okx.com/api/v5/market/",
+    markets: function() {
+      var self = this;
+      return Promise.all(COINS.map(function(c) {
+        return fetchJSON(self.base + "ticker?instId=" + c.inst, 8000).then(function(j) {
+          var d = j && j.data && j.data[0]; if (!d) throw 0;
+          var last = parseFloat(d.last), open = parseFloat(d.open24h);
+          return { c: c, price: last, chg: (open ? (last - open) / open * 100 : null), cap: last * c.supply, spark: null };
+        });
+      }));
+    },
+    spark: function(c) {
+      return fetchJSON(this.base + "candles?instId=" + c.inst + "&bar=4H&limit=42", 8000).then(function(j) {
+        var d = (j && j.data) || []; return d.map(function(row) { return parseFloat(row[4]); }).reverse();
+      });
+    },
+    history: function(c, days) {
+      var m = BAR_MAP[days] || ["1D", 30];
+      return fetchJSON(this.base + "candles?instId=" + c.inst + "&bar=" + m[0] + "&limit=" + (m[1] + 2), 9000).then(function(j) {
+        var rows = j && j.data; if (!rows || rows.length < 2) throw 0;
+        return { then: parseFloat(rows[Math.min(m[1], rows.length - 1)][4]), now: parseFloat(rows[0][4]) };
+      });
+    }
+  };
+  var geckoSource = {
+    name: "CoinGecko",
+    markets: function() {
+      var ids = COINS.map(function(c) { return c.cg; }).join(",");
+      return fetchJSON("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=" + ids +
+        "&sparkline=true&price_change_percentage=24h", 9000).then(function(data) {
+        return COINS.map(function(c) {
+          var g = null; data.forEach(function(x) { if (x.id === c.cg) g = x; });
+          if (!g) return { c: c, price: null, chg: null, cap: null, spark: null };
+          return { c: c, price: g.current_price, chg: g.price_change_percentage_24h, cap: g.market_cap,
+                   spark: (g.sparkline_in_7d ? g.sparkline_in_7d.price : null) };
+        });
+      });
+    },
+    spark: function() { return Promise.resolve(null); },
+    history: function(c, days) {
+      return fetchJSON("https://api.coingecko.com/api/v3/coins/" + c.cg + "/market_chart?vs_currency=usd&days=" + days + "&interval=daily", 9000).then(function(d) {
+        var p = d.prices; if (!p || p.length < 2) throw 0;
+        return { then: p[0][1], now: p[p.length - 1][1] };
+      });
+    }
+  };
+  var SOURCES = [okxSource, geckoSource];
+  var activeSource = null;
 
   // ============ 恐惧与贪婪指数仪表盘 ============
   function fngZone(v) {
@@ -773,80 +847,117 @@ html[data-user-color-scheme="dark"] .egg-toast { background:#0f1419; border:1px 
     var pts = prices.map(function(p, i) {
       return (i * step).toFixed(1) + "," + (h - ((p - min) / range) * (h - 4) - 2).toFixed(1);
     }).join(" ");
-    return '<svg class="coin-spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" style="width:100%;height:100%;display:block;">' +
            '<polyline fill="none" stroke="' + (up ? "#16a34a" : "#dc2626") + '" stroke-width="1.6" points="' + pts + '"/></svg>';
   }
-  function renderCoins(coins) {
-    var grid = document.getElementById("market-grid"), html = "";
-    coins.forEach(function(c) {
-      var chg = c.price_change_percentage_24h;
+  // 卡片只构建一次；之后刷新只原地更新数字，避免整块重绘导致的“跳动”
+  function buildCards() {
+    var html = "";
+    COINS.forEach(function(c) {
+      html += '<div class="coin-card" data-id="' + c.id + '"><div class="coin-head">' +
+              '<div class="coin-logo" data-id="' + c.id + '" style="background:' + c.color + '">' + c.sym + '</div>' +
+              '<div><div class="coin-name">' + esc(c.name) + ' <span class="coin-nick">“' + esc(c.nick) + '”</span></div>' +
+              '<div class="coin-symbol">' + c.sym + '</div></div></div>' +
+              '<div class="coin-price" data-id="' + c.id + '">--</div>' +
+              '<div class="coin-change" data-id="' + c.id + '">--</div>' +
+              '<div class="coin-spark" data-id="' + c.id + '"></div>' +
+              '<div class="coin-mood" data-id="' + c.id + '"></div>' +
+              '<div class="coin-cap"><span>市值</span><span class="coin-cap-v" data-id="' + c.id + '">--</span></div></div>';
+    });
+    document.getElementById("market-grid").innerHTML = html;
+    built = true;
+  }
+  function updateCoins(items) {
+    items.forEach(function(x) {
+      if (x.price == null) return;
+      var c = x.c, price = x.price, chg = x.chg;
       var up = (chg == null) ? true : chg >= 0;
-      var chgTxt = (chg == null) ? "--" : (up ? "▲ " : "▼ ") + Math.abs(chg).toFixed(2) + "%";
-      var nick = NICK[(c.symbol || "").toLowerCase()];
-      var spark = c.sparkline_in_7d ? sparkline(c.sparkline_in_7d.price, up) : "";
-      html += '<div class="coin-card"><div class="coin-head">' +
-              '<img class="coin-logo" src="' + c.image + '" srcset="/img/loading.gif" lazyload alt="" loading="lazy" data-id="' + esc(c.id) + '">' +
-              '<div><div class="coin-name">' + esc(c.name) + (nick ? ' <span class="coin-nick">“' + nick + '”</span>' : '') + '</div>' +
-              '<div class="coin-symbol">' + esc(c.symbol) + '</div></div></div>' +
-              '<div class="coin-price" data-id="' + esc(c.id) + '">' + fmtPrice(c.current_price) + '</div>' +
-              '<div class="coin-change ' + (up ? "up" : "down") + '">' + chgTxt + '</div>' + spark +
-              '<div class="coin-mood">' + mood(chg) + '</div>' +
-              '<div class="coin-cap"><span>市值</span><span>' + fmtCapCN(c.market_cap) + '</span></div></div>';
-    });
-    grid.innerHTML = html;
-    var imgs = grid.querySelectorAll(".coin-logo");
-    for (var i = 0; i < imgs.length; i++) { imgs[i].removeAttribute("srcset"); imgs[i].removeAttribute("lazyload"); }
 
-    // 价格跳动：对比上一次价格，变了就闪一下 + 数字滚动
-    coins.forEach(function(c) {
-      var pd = grid.querySelector('.coin-price[data-id="' + c.id + '"]');
-      if (!pd) return;
-      var prev = prevPrices[c.id];
-      if (prev != null && prev !== c.current_price) {
-        var cls = c.current_price > prev ? "up-flash" : "down-flash";
-        pd.classList.remove("up-flash", "down-flash");
-        void pd.offsetWidth;
-        pd.classList.add(cls);
-        rollNumber(pd, prev, c.current_price);
+      var pd = document.querySelector('.coin-price[data-id="' + c.id + '"]');
+      if (pd) {
+        var prev = prevPrices[c.id];
+        if (prev != null && prev !== price) {
+          pd.classList.remove("up-flash", "down-flash");
+          void pd.offsetWidth;
+          pd.classList.add(price > prev ? "up-flash" : "down-flash");
+          rollNumber(pd, prev, price);
+        } else {
+          pd.textContent = fmtPrice(price);
+        }
+        prevPrices[c.id] = price;
       }
-      prevPrices[c.id] = c.current_price;
+      var cd = document.querySelector('.coin-change[data-id="' + c.id + '"]');
+      if (cd) { cd.className = "coin-change " + (up ? "up" : "down");
+        cd.textContent = (chg == null) ? "--" : (up ? "▲ " : "▼ ") + Math.abs(chg).toFixed(2) + "%"; }
+      var md = document.querySelector('.coin-mood[data-id="' + c.id + '"]');
+      if (md) md.textContent = mood(chg);
+      var cap = (x.cap != null) ? x.cap : price * c.supply;
+      var cv = document.querySelector('.coin-cap-v[data-id="' + c.id + '"]');
+      if (cv) cv.textContent = fmtCapCN(cap);
+
+      if (c.isBTC) state.btcCap = cap;
+      if (c.isETH) state.ethCap = cap;
     });
+    renderRank();
+  }
+  function loadSparklines(items) {
+    items.forEach(function(x) {
+      function apply(prices) {
+        if (!prices || prices.length < 2) return;
+        var up = prices[prices.length - 1] >= prices[0];
+        var el = document.querySelector('.coin-spark[data-id="' + x.c.id + '"]');
+        if (el) el.innerHTML = sparkline(prices, up);
+      }
+      if (x.spark && x.spark.length) apply(x.spark);
+      else if (activeSource && activeSource.spark) activeSource.spark(x.c).then(apply).catch(function() {});
+    });
+  }
+  function renderCoins(items) {
+    if (!built) buildCards();
+    updateCoins(items);
+    document.getElementById("coin-section").style.display = "block";
+    if (!sparkLoaded) { sparkLoaded = true; loadSparklines(items); }
 
     // 彩蛋：首次加载遇到大盘暴涨 / 整点，飘一串火箭
     var maxChg = 0;
-    coins.forEach(function(c) { if (c.price_change_percentage_24h != null && c.price_change_percentage_24h > maxChg) maxChg = c.price_change_percentage_24h; });
+    items.forEach(function(x) { if (x.chg != null && x.chg > maxChg) maxChg = x.chg; });
     if (firstCoinLoad && maxChg >= 8) launchRockets(12);
     firstCoinLoad = false;
     var nowD = new Date();
     if (nowD.getMinutes() === 0 && nowD.getHours() !== lastHourEgg) { lastHourEgg = nowD.getHours(); launchRockets(6); }
 
-    var btc = null, eth = null;
-    coins.forEach(function(c) { if (c.id === "bitcoin") btc = c; if (c.id === "ethereum") eth = c; });
-    if (btc) state.btcCap = btc.market_cap;
-    if (eth) state.ethCap = eth.market_cap;
-    renderRank();
-    document.getElementById("coin-section").style.display = "block";
-
     var d = new Date();
-    document.getElementById("market-updated").textContent = "更新于 " +
-      String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") + ":" + String(d.getSeconds()).padStart(2, "0");
+    document.getElementById("market-updated").textContent = "更新于 " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+  }
+  // 按顺序尝试数据源，成功即锁定 activeSource
+  function tryMarkets(i) {
+    if (i >= SOURCES.length) {
+      document.getElementById("market-loading").style.display = "none";
+      if (!built) document.getElementById("market-error").style.display = "block";
+      return;
+    }
+    SOURCES[i].markets().then(function(items) {
+      var okCount = items.filter(function(x) { return x.price != null; }).length;
+      if (!okCount) throw 0;
+      activeSource = SOURCES[i];
+      document.getElementById("market-loading").style.display = "none";
+      document.getElementById("market-error").style.display = "none";
+      renderCoins(items);
+    }).catch(function() { tryMarkets(i + 1); });
   }
   function loadCrypto() {
-    fetch(CG_API, { headers: { "Accept": "application/json" } })
-      .then(function(r) { if (!r.ok) throw 0; return r.json(); })
-      .then(function(data) {
-        document.getElementById("market-loading").style.display = "none";
-        document.getElementById("market-error").style.display = "none";
-        renderCoins(data);
-      })
-      .catch(function() {
-        document.getElementById("market-loading").style.display = "none";
-        if (!document.getElementById("market-grid").innerHTML) document.getElementById("market-error").style.display = "block";
-      });
+    if (activeSource) {
+      activeSource.markets().then(function(items) {
+        if (!items.filter(function(x) { return x.price != null; }).length) throw 0;
+        renderCoins(items);
+      }).catch(function() { activeSource = null; tryMarkets(0); });
+    } else {
+      tryMarkets(0);
+    }
   }
 
   // ============ 假如当时上车 ============
-  var COIN_ZH = { bitcoin: "比特币", ethereum: "以太坊", solana: "Solana", dogecoin: "狗狗币" };
+  var COIN_ZH = { "BTC-USDT": "比特币", "ETH-USDT": "以太坊", "SOL-USDT": "Solana", "DOGE-USDT": "狗狗币" };
   function calcLine(m) {
     if (m >= 5)   return "🤯 财富自由警告，这波直接封神";
     if (m >= 3)   return "🚀 直接起飞，早知道 all in 了";
@@ -857,28 +968,29 @@ html[data-user-color-scheme="dark"] .egg-toast { background:#0f1419; border:1px 
   }
   function runCalc() {
     var amount = parseFloat(document.getElementById("calc-amount").value);
-    var coin = document.getElementById("calc-coin").value;
+    var inst = document.getElementById("calc-coin").value;
     var days = document.getElementById("calc-when").value;
     var whenTxt = document.getElementById("calc-when").selectedOptions[0].textContent;
     var res = document.getElementById("calc-result");
     if (!amount || amount <= 0) { res.innerHTML = "请输入一个大于 0 的金额 🙂"; return; }
     res.innerHTML = "⏳ 正在穿越时空翻账本...";
-    fetch("https://api.coingecko.com/api/v3/coins/" + coin + "/market_chart?vs_currency=usd&days=" + days + "&interval=daily")
-      .then(function(r) { if (!r.ok) throw 0; return r.json(); })
-      .then(function(d) {
-        var p = d.prices;
-        if (!p || p.length < 2) throw 0;
-        var then = p[0][1], now = p[p.length - 1][1];
+    var c = COIN_BY_INST[inst] || COINS[0];
+    // 优先用当前生效的数据源
+    var order = activeSource ? [activeSource].concat(SOURCES.filter(function(s) { return s !== activeSource; })) : SOURCES.slice();
+    (function run(i) {
+      if (i >= order.length) { res.innerHTML = "😵 数据拉取失败，稍后再试试。"; return; }
+      order[i].history(c, days).then(function(h) {
+        var then = h.then, now = h.now;
         var units = amount / then, value = units * now, mult = value / amount;
-        var profit = value - amount, up = profit >= 0;
+        var up = value >= amount;
         res.innerHTML =
-          '<div>' + whenTxt + '花 <b>$' + amount.toLocaleString("en-US") + '</b> 买 <b>' + (COIN_ZH[coin] || coin) + '</b>（约 ' +
+          '<div>' + whenTxt + '花 <b>$' + amount.toLocaleString("en-US") + '</b> 买 <b>' + (COIN_ZH[c.inst] || c.name) + '</b>（约 ' +
           units.toLocaleString("en-US", { maximumFractionDigits: 4 }) + ' 枚，当时约 ' + fmtPrice(then) + '/枚）</div>' +
           '<div class="calc-big ' + (up ? "up" : "down") + '">现在值 $' + value.toLocaleString("en-US", { maximumFractionDigits: 0 }) +
           '（' + (up ? "赚了 " + mult.toFixed(2) + " 倍" : "亏了 " + ((1 - mult) * 100).toFixed(1) + "%") + '）</div>' +
           '<div class="calc-line">' + calcLine(mult) + '</div>';
-      })
-      .catch(function() { res.innerHTML = "😵 数据拉取失败，稍后再试试。"; });
+      }).catch(function() { run(i + 1); });
+    })(0);
   }
 
   // ============ 启动 ============
