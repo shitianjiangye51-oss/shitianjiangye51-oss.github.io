@@ -19,15 +19,15 @@
   <meta name="author" content="严亨明">
   <meta name="keywords" content="严亨明, 博客, 技术, 生活, 随笔">
   
-    <meta name="description" content="主流加密货币实时行情 · 数据来自 CoinGecko">
+    <meta name="description" content="加密行情实验室 · 恐惧贪婪指数 · 全球资产市值排行榜 · 假如当时上车计算器">
 <meta property="og:type" content="website">
 <meta property="og:title" content="加密行情">
 <meta property="og:url" content="https://shitianjiangye51-oss.github.io/market/index.html">
 <meta property="og:site_name" content="严亨明的博客">
-<meta property="og:description" content="主流加密货币实时行情 · 数据来自 CoinGecko">
+<meta property="og:description" content="加密行情实验室 · 恐惧贪婪指数 · 全球资产市值排行榜 · 假如当时上车计算器">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-07-21T15:38:36.049Z">
-<meta property="article:modified_time" content="2026-07-21T15:38:36.049Z">
+<meta property="article:published_time" content="2026-07-21T16:02:01.139Z">
+<meta property="article:modified_time" content="2026-07-21T16:02:01.139Z">
 <meta property="article:author" content="严亨明">
 <meta property="article:tag" content="严亨明, 博客, 技术, 生活, 随笔">
 <meta name="twitter:card" content="summary_large_image">
@@ -386,12 +386,10 @@
 <article class="page-content">
   <div id="market-app">
   <div class="market-header">
-    <p class="market-intro">主流加密货币实时行情，数据来自 CoinGecko 公开接口，每 60 秒自动刷新。</p>
+    <p class="market-intro">一个会说人话的加密行情实验室 —— 看情绪、比市值、算收益。加密与金银数据实时更新。</p>
     <div class="market-toolbar">
       <span id="market-updated" class="market-updated"></span>
-      <button id="market-refresh" class="market-refresh" title="立即刷新">
-        ↻ 刷新
-      </button>
+      <button id="market-refresh" class="market-refresh" title="立即刷新">↻ 刷新</button>
     </div>
   </div>
 
@@ -400,14 +398,56 @@
     <p class="mt-3" style="color:#718096;">正在加载实时行情...</p>
   </div>
 
+  <!-- 恐惧与贪婪指数 -->
+  <section id="fng-section" class="fng-section" style="display:none;">
+    <h2 class="section-title">😱 今日市场情绪 · 恐惧与贪婪指数</h2>
+    <div class="fng-wrap">
+      <div>
+        <div id="fng-gauge"></div>
+        <div class="fng-ends"><span>0 · 极度恐惧</span><span>极度贪婪 · 100</span></div>
+      </div>
+      <div class="fng-text">
+        <div id="fng-value" class="fng-value">--</div>
+        <div id="fng-label" class="fng-label"></div>
+        <div id="fng-line" class="fng-line"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- 全球资产市值排行榜 -->
   <section id="rank-section" class="rank-section" style="display:none;">
     <h2 class="section-title">🌍 全球资产市值排行榜</h2>
     <div id="rank-headline" class="rank-headline"></div>
     <div id="rank-list" class="rank-list"></div>
-    <p class="rank-note">💡 加密资产为 CoinGecko 实时数据；传统资产（黄金 / 白银 / 股票）为参考快照（截至 2026 年 7 月），仅供娱乐对比，非投资依据。</p>
+    <p class="rank-note">💡 加密资产为 CoinGecko 实时数据，黄金 / 白银为每日现货价（gold-api.com）实时折算；股票为参考快照（截至 2026 年 7 月），仅供娱乐对比，非投资依据。</p>
   </section>
 
+  <!-- 假如当时上车 -->
+  <section id="calc-section" class="calc-section">
+    <h2 class="section-title">🕹️ 假如当时上车</h2>
+    <div class="calc-form">
+      <span>如果</span>
+      <select id="calc-when">
+        <option value="30">一个月前</option>
+        <option value="90">三个月前</option>
+        <option value="180">半年前</option>
+        <option value="365" selected>一年前</option>
+      </select>
+      <span>我花</span>
+      <input id="calc-amount" type="number" min="1" step="100" value="1000" style="width:110px;">
+      <span>美元买了</span>
+      <select id="calc-coin">
+        <option value="bitcoin">比特币 BTC</option>
+        <option value="ethereum">以太坊 ETH</option>
+        <option value="solana">Solana SOL</option>
+        <option value="dogecoin">狗狗币 DOGE</option>
+      </select>
+      <button id="calc-btn" class="calc-btn">算一算</button>
+    </div>
+    <div id="calc-result" class="calc-result">🤔 选好参数，点「算一算」看看能赚多少（或亏多少）。</div>
+  </section>
+
+  <!-- 主流币实时行情 -->
   <section id="coin-section" style="display:none;">
     <h2 class="section-title">💰 主流币实时行情</h2>
     <div id="market-grid" class="market-grid"></div>
@@ -427,50 +467,39 @@
 html[data-user-color-scheme="dark"] .market-refresh { background:#252d38; color:#a7a9ad; border-color:#435266; }
 html[data-user-color-scheme="dark"] .market-refresh:hover { background:#5b7cfa; color:#fff; }
 
-.market-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:1.2rem; }
-.coin-card { background:#fff; border-radius:14px; padding:1.3rem; box-shadow:0 2px 12px rgba(0,0,0,.08); transition:transform .2s, box-shadow .2s; }
-.coin-card:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,.12); }
-html[data-user-color-scheme="dark"] .coin-card { background:#252d38; }
-
-.coin-head { display:flex; align-items:center; margin-bottom:.9rem; }
-.coin-logo { width:36px; height:36px; border-radius:50%; margin-right:.7rem; background:#edf2f7; flex-shrink:0; }
-.coin-name { font-weight:600; color:#1a202c; font-size:1.05rem; line-height:1.2; }
-html[data-user-color-scheme="dark"] .coin-name { color:#c4c6c9; }
-.coin-symbol { color:#a0aec0; font-size:.8rem; text-transform:uppercase; }
-
-.coin-price { font-size:1.6rem; font-weight:700; color:#2d3748; margin-bottom:.3rem; letter-spacing:-.5px; }
-html[data-user-color-scheme="dark"] .coin-price { color:#e2e8f0; }
-.coin-change { font-size:.9rem; font-weight:600; display:inline-flex; align-items:center; gap:.25rem; }
-.coin-change.up { color:#16a34a; }
-.coin-change.down { color:#dc2626; }
-
-.coin-spark { margin-top:.8rem; height:44px; width:100%; }
-.coin-cap { margin-top:.6rem; font-size:.78rem; color:#a0aec0; display:flex; justify-content:space-between; }
-
-/* ---------- 全球资产市值排行榜 ---------- */
 .section-title { font-size:1.3rem; font-weight:700; color:#2d3748; margin:2.5rem 0 1.2rem; text-align:center; }
 html[data-user-color-scheme="dark"] .section-title { color:#e2e8f0; }
 
+/* ---------- 恐惧与贪婪指数 ---------- */
+.fng-wrap { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:1.5rem 2.5rem; background:#f7f9fc; border-radius:14px; padding:1.5rem; }
+html[data-user-color-scheme="dark"] .fng-wrap { background:#252d38; }
+.fng-svg { width:220px; height:125px; display:block; }
+.fng-ends { display:flex; justify-content:space-between; width:220px; margin:.2rem auto 0; font-size:.72rem; color:#a0aec0; }
+.fng-text { text-align:center; }
+.fng-value { font-size:2.8rem; font-weight:800; line-height:1; }
+.fng-label { font-size:1.15rem; font-weight:700; margin-top:.3rem; color:#4a5568; }
+html[data-user-color-scheme="dark"] .fng-label { color:#c4c6c9; }
+.fng-line { margin-top:.6rem; color:#718096; font-size:.95rem; }
+html[data-user-color-scheme="dark"] .fng-line { color:#9aa4b0; }
+
+/* ---------- 全球资产市值排行榜 ---------- */
 .rank-headline { text-align:center; font-size:1.05rem; color:#4a5568; background:#f7f9fc; border-radius:12px; padding:1rem 1.2rem; margin-bottom:1.2rem; line-height:1.7; }
 .rank-headline b { color:#f7931a; }
 html[data-user-color-scheme="dark"] .rank-headline { background:#252d38; color:#a7a9ad; }
 .rank-hot { color:#16a34a; font-weight:600; }
 .rank-sub { margin-top:.5rem; font-size:.85rem; color:#a0aec0; }
-
 .rank-list { display:flex; flex-direction:column; gap:.5rem; }
 .rank-row { display:flex; align-items:center; gap:.8rem; background:#fff; border-radius:12px; padding:.7rem 1rem; box-shadow:0 2px 10px rgba(0,0,0,.05); transition:transform .15s; }
 .rank-row:hover { transform:translateX(3px); }
 html[data-user-color-scheme="dark"] .rank-row { background:#252d38; }
 .rank-row.is-btc { background:linear-gradient(90deg,#fff7ed,#fff); border:1px solid #f7931a; }
 html[data-user-color-scheme="dark"] .rank-row.is-btc { background:linear-gradient(90deg,#3a2f1e,#252d38); border-color:#f7931a; }
-
 .rank-num, .rank-medal { flex-shrink:0; width:26px; height:26px; line-height:26px; text-align:center; border-radius:50%; font-size:.8rem; font-weight:700; color:#718096; background:#edf2f7; }
 html[data-user-color-scheme="dark"] .rank-num { background:#374151; color:#a7a9ad; }
 .rank-medal { color:#fff; }
 .rank-medal.m1 { background:#f6ad37; }
 .rank-medal.m2 { background:#b0b7c3; }
 .rank-medal.m3 { background:#cd7f32; }
-
 .rank-mark { flex-shrink:0; width:30px; text-align:center; font-size:1.3rem; font-weight:700; }
 .rank-info { flex:1; min-width:0; }
 .rank-name { font-weight:600; color:#2d3748; font-size:.98rem; display:flex; align-items:center; gap:.4rem; }
@@ -485,30 +514,82 @@ html[data-user-color-scheme="dark"] .rank-bar { background:#374151; }
 html[data-user-color-scheme="dark"] .rank-cap { color:#e2e8f0; }
 .rank-tag { font-size:.7rem; color:#a0aec0; font-weight:400; margin-top:.1rem; }
 .rank-note { text-align:center; font-size:.8rem; color:#a0aec0; margin-top:1rem; }
+
+/* ---------- 假如当时上车 ---------- */
+.calc-form { display:flex; flex-wrap:wrap; gap:.7rem; justify-content:center; align-items:center; background:#fff; border-radius:14px; padding:1.3rem; box-shadow:0 2px 12px rgba(0,0,0,.06); color:#4a5568; }
+html[data-user-color-scheme="dark"] .calc-form { background:#252d38; color:#a7a9ad; }
+.calc-form input, .calc-form select { border:1px solid #e2e8f0; border-radius:10px; padding:.5rem .8rem; font-size:.95rem; color:#2d3748; background:#fff; }
+html[data-user-color-scheme="dark"] .calc-form input, html[data-user-color-scheme="dark"] .calc-form select { background:#1c2530; color:#e2e8f0; border-color:#435266; }
+.calc-btn { border:none; background:#5b7cfa; color:#fff; border-radius:10px; padding:.55rem 1.4rem; font-size:.95rem; font-weight:600; cursor:pointer; transition:background .2s; }
+.calc-btn:hover { background:#4361ee; }
+.calc-result { text-align:center; margin-top:1.2rem; font-size:1.05rem; color:#4a5568; }
+html[data-user-color-scheme="dark"] .calc-result { color:#a7a9ad; }
+.calc-big { font-size:1.7rem; font-weight:800; margin:.4rem 0; }
+.calc-big.up { color:#16a34a; }
+.calc-big.down { color:#dc2626; }
+.calc-line { color:#718096; margin-top:.4rem; }
+
+/* ---------- 主流币卡片 ---------- */
+.market-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:1.2rem; }
+.coin-card { background:#fff; border-radius:14px; padding:1.3rem; box-shadow:0 2px 12px rgba(0,0,0,.08); transition:transform .2s, box-shadow .2s; }
+.coin-card:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,.12); }
+html[data-user-color-scheme="dark"] .coin-card { background:#252d38; }
+.coin-head { display:flex; align-items:center; margin-bottom:.9rem; }
+.coin-logo { width:36px; height:36px; border-radius:50%; margin-right:.7rem; background:#edf2f7; flex-shrink:0; }
+.coin-name { font-weight:600; color:#1a202c; font-size:1.05rem; line-height:1.2; }
+html[data-user-color-scheme="dark"] .coin-name { color:#c4c6c9; }
+.coin-symbol { color:#a0aec0; font-size:.8rem; text-transform:uppercase; }
+.coin-nick { color:#f7931a; font-size:.78rem; font-weight:600; }
+.coin-price { font-size:1.6rem; font-weight:700; color:#2d3748; margin-bottom:.3rem; letter-spacing:-.5px; }
+html[data-user-color-scheme="dark"] .coin-price { color:#e2e8f0; }
+.coin-change { font-size:.9rem; font-weight:600; display:inline-flex; align-items:center; gap:.25rem; }
+.coin-change.up { color:#16a34a; }
+.coin-change.down { color:#dc2626; }
+.coin-spark { margin-top:.8rem; height:44px; width:100%; }
+.coin-mood { margin-top:.6rem; font-size:.82rem; color:#718096; }
+html[data-user-color-scheme="dark"] .coin-mood { color:#9aa4b0; }
+.coin-cap { margin-top:.6rem; font-size:.78rem; color:#a0aec0; display:flex; justify-content:space-between; }
 </style>
 
 <script>
 (function() {
   var COINS = "bitcoin,ethereum,solana,ripple,cardano,dogecoin,avalanche-2,chainlink,litecoin,polkadot";
-  var API = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=" + COINS +
-            "&order=market_cap_desc&sparkline=true&price_change_percentage=24h";
+  var CG_API = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=" + COINS +
+               "&order=market_cap_desc&sparkline=true&price_change_percentage=24h";
   var REFRESH_MS = 60000;
   var timer = null;
 
-  // 传统资产市值参考快照（美元）。股票/贵金属无免费实时接口，
-  // 这里用近期公开数据的估算值，需要更新时改下面的数字即可。
-  var TRAD_ASSETS = [
-    { name: "黄金",     tag: "贵金属", mark: "🟡", cap: 18.5e12 },
+  // 地上存量（金衡盎司），乘以每日现货价即得市值。约：黄金 21.6 万吨、白银 100 万吨。
+  var GOLD_SUPPLY_OZ = 6.95e9;
+  var SILVER_SUPPLY_OZ = 3.22e10;
+
+  // 股票市值参考快照（美元）。无免费无密钥的浏览器直连接口，需更新时改数字即可。
+  var STOCKS = [
     { name: "英伟达",   tag: "美股",   mark: "🎮", cap: 3.9e12 },
     { name: "苹果",     tag: "美股",   mark: "🍎", cap: 3.5e12 },
     { name: "微软",     tag: "美股",   mark: "🪟", cap: 3.4e12 },
     { name: "Alphabet", tag: "美股",   mark: "🔍", cap: 2.5e12 },
     { name: "亚马逊",   tag: "美股",   mark: "📦", cap: 2.4e12 },
-    { name: "白银",     tag: "贵金属", mark: "⚪", cap: 1.9e12 },
     { name: "沙特阿美", tag: "沙特股", mark: "🛢️", cap: 1.8e12 },
     { name: "Meta",     tag: "美股",   mark: "📘", cap: 1.6e12 }
   ];
   var RANK_KEY = "market-btc-rank";
+
+  // 币种昵称 + 涨跌吐槽
+  var NICK = { btc:"大饼", eth:"以太", sol:"索拉纳", xrp:"瑞波", ada:"艾达",
+               doge:"狗狗", avax:"雪崩", link:"链克", ltc:"莱特", dot:"波卡" };
+  function mood(chg) {
+    if (chg == null) return "😶 数据缺失";
+    if (chg >= 5)  return "🚀 起飞了，追还是不追？";
+    if (chg >= 2)  return "📈 稳中有升，感觉不错";
+    if (chg >= 0)  return "😌 温和红盘，岁月静好";
+    if (chg >= -2) return "😐 小幅回调，问题不大";
+    if (chg >= -5) return "😟 有点虚，拿稳别慌";
+    return "😭 破防了，要不要抄底？";
+  }
+
+  // 全局状态：加密与金银异步返回，任一到达都重绘排行榜
+  var state = { btcCap: null, ethCap: null, goldPrice: null, silverPrice: null };
 
   function fmtPrice(v) {
     if (v == null) return "--";
@@ -516,151 +597,208 @@ html[data-user-color-scheme="dark"] .rank-cap { color:#e2e8f0; }
     if (v >= 1) return "$" + v.toLocaleString("en-US", { maximumFractionDigits: 2 });
     return "$" + v.toLocaleString("en-US", { maximumFractionDigits: 5 });
   }
-
-  function fmtCap(v) {
-    if (v == null) return "--";
-    if (v >= 1e12) return "$" + (v / 1e12).toFixed(2) + "T";
-    if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
-    if (v >= 1e6) return "$" + (v / 1e6).toFixed(2) + "M";
-    return "$" + v.toFixed(0);
-  }
-
-  // 排行榜用的中文市值格式（万亿）
-  function fmtCapCN(v) {
-    if (v == null) return "--";
-    return "$" + (v / 1e12).toFixed(2) + " 万亿";
-  }
-
+  function fmtCapCN(v) { return v == null ? "--" : "$" + (v / 1e12).toFixed(2) + " 万亿"; }
   function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
-  // 渲染「全球资产市值排行榜」：加密资产实时，传统资产用快照，合并后重排
-  function renderRank(btcCap, ethCap) {
-    if (btcCap == null) return;
-    var list = TRAD_ASSETS.slice();
-    list.push({ name: "比特币", tag: "加密货币", mark: "₿", cap: btcCap, isBTC: true, live: true });
-    if (ethCap != null) list.push({ name: "以太坊", tag: "加密货币", mark: "Ξ", cap: ethCap, live: true });
+  // ============ 恐惧与贪婪指数仪表盘 ============
+  function fngZone(v) {
+    if (v <= 24) return { zh: "极度恐惧", color: "#e53e3e", line: "😱 遍地血流，别人恐惧我贪婪？" };
+    if (v <= 44) return { zh: "恐惧",     color: "#ed8936", line: "😟 市场偏冷，抄底党蠢蠢欲动" };
+    if (v <= 55) return { zh: "中性",     color: "#a0aec0", line: "😐 不温不火，静观其变" };
+    if (v <= 74) return { zh: "贪婪",     color: "#48bb78", line: "🤑 有点上头，注意风险" };
+    return { zh: "极度贪婪", color: "#16a34a", line: "🚀 全场狂欢，小心接盘" };
+  }
+  function buildGauge(v) {
+    var cx = 110, cy = 110, r = 88, sw = 18;
+    var segs = [[180,144,"#e53e3e"],[144,108,"#ed8936"],[108,72,"#cbd5e0"],[72,36,"#48bb78"],[36,0,"#16a34a"]];
+    function polar(deg, rr) { var a = deg * Math.PI / 180; return [cx + rr * Math.cos(a), cy - rr * Math.sin(a)]; }
+    function arc(a, b) { var p1 = polar(a, r), p2 = polar(b, r);
+      return "M" + p1[0].toFixed(1) + "," + p1[1].toFixed(1) + " A" + r + "," + r + " 0 0 0 " + p2[0].toFixed(1) + "," + p2[1].toFixed(1); }
+    var paths = "";
+    segs.forEach(function(s) { paths += '<path d="' + arc(s[0], s[1]) + '" fill="none" stroke="' + s[2] + '" stroke-width="' + sw + '"/>'; });
+    var ang = 180 - Math.max(0, Math.min(100, v)) * 1.8;
+    var tip = polar(ang, r - 22);
+    var needle = '<line x1="' + cx + '" y1="' + cy + '" x2="' + tip[0].toFixed(1) + '" y2="' + tip[1].toFixed(1) +
+                 '" stroke="#2d3748" stroke-width="3" stroke-linecap="round"/><circle cx="' + cx + '" cy="' + cy + '" r="6" fill="#2d3748"/>';
+    return '<svg viewBox="0 0 220 122" class="fng-svg">' + paths + needle + '</svg>';
+  }
+  function loadFng() {
+    fetch("https://api.alternative.me/fng/?limit=1")
+      .then(function(r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function(d) {
+        var item = d && d.data && d.data[0];
+        if (!item) return;
+        var v = parseInt(item.value, 10);
+        var z = fngZone(v);
+        document.getElementById("fng-gauge").innerHTML = buildGauge(v);
+        var vEl = document.getElementById("fng-value");
+        vEl.textContent = v; vEl.style.color = z.color;
+        document.getElementById("fng-label").textContent = z.zh;
+        document.getElementById("fng-line").textContent = z.line;
+        document.getElementById("fng-section").style.display = "block";
+      })
+      .catch(function() {});
+  }
+
+  // ============ 全球资产市值排行榜 ============
+  function renderRank() {
+    if (state.btcCap == null) return;
+    var goldCap = state.goldPrice ? state.goldPrice * GOLD_SUPPLY_OZ : 28.3e12;
+    var silverCap = state.silverPrice ? state.silverPrice * SILVER_SUPPLY_OZ : 1.9e12;
+    var live = state.goldPrice != null;
+
+    var list = STOCKS.slice();
+    list.push({ name: "黄金", tag: "贵金属", mark: "🟡", cap: goldCap, live: live });
+    list.push({ name: "白银", tag: "贵金属", mark: "⚪", cap: silverCap, live: live });
+    list.push({ name: "比特币", tag: "加密货币", mark: "₿", cap: state.btcCap, isBTC: true, live: true });
+    if (state.ethCap != null) list.push({ name: "以太坊", tag: "加密货币", mark: "Ξ", cap: state.ethCap, live: true });
     list.sort(function(a, b) { return b.cap - a.cap; });
 
-    var maxCap = list[0].cap;
-    var idx = -1, goldCap = 18.5e12;
-    for (var i = 0; i < list.length; i++) {
-      if (list[i].isBTC) idx = i;
-      if (list[i].name === "黄金") goldCap = list[i].cap;
-    }
-    var rank = idx + 1;
-    var above = list[idx - 1];
-    var below = list[idx + 1];
+    var maxCap = list[0].cap, idx = 0;
+    for (var i = 0; i < list.length; i++) { if (list[i].isBTC) idx = i; }
+    var rank = idx + 1, above = list[idx - 1], below = list[idx + 1];
 
-    // 头条文案：优先「超越了谁」，否则「还差几 %」
     var prev = parseInt(localStorage.getItem(RANK_KEY), 10);
     var headline;
     if (!isNaN(prev) && rank < prev && below) {
       headline = '<span class="rank-hot">🎉 BTC 排名上升！刚刚超越了 <b>' + esc(below.name) +
                  '</b>，现居全球第 <b>' + rank + '</b> 大资产</span>';
     } else if (above) {
-      var gap = (above.cap - btcCap) / btcCap * 100;
+      var gap = (above.cap - state.btcCap) / state.btcCap * 100;
       headline = 'BTC 现居全球第 <b>' + rank + '</b> 大资产，距离超越 <b>' + esc(above.name) +
                  '</b> 还差 <b>' + gap.toFixed(1) + '%</b>';
     } else {
       headline = '👑 BTC 已经是全球市值第一的资产！';
     }
-    headline += '<div class="rank-sub">BTC 市值 ≈ 黄金的 <b>' + (btcCap / goldCap * 100).toFixed(1) +
-                '%</b>，登顶黄金还需上涨 <b>' + ((goldCap - btcCap) / btcCap * 100).toFixed(0) + '%</b></div>';
+    headline += '<div class="rank-sub">BTC 市值 ≈ 黄金的 <b>' + (state.btcCap / goldCap * 100).toFixed(1) +
+                '%</b>，登顶黄金还需上涨 <b>' + ((goldCap - state.btcCap) / state.btcCap * 100).toFixed(0) + '%</b></div>';
     localStorage.setItem(RANK_KEY, rank);
     document.getElementById("rank-headline").innerHTML = headline;
 
     var html = "";
     list.forEach(function(a, i) {
-      var r = i + 1;
-      var badge = r <= 3 ? '<span class="rank-medal m' + r + '">' + r + '</span>'
-                         : '<span class="rank-num">' + r + '</span>';
+      var r2 = i + 1;
+      var badge = r2 <= 3 ? '<span class="rank-medal m' + r2 + '">' + r2 + '</span>' : '<span class="rank-num">' + r2 + '</span>';
       var barW = Math.max(3, a.cap / maxCap * 100).toFixed(1);
-      html += '<div class="rank-row' + (a.isBTC ? ' is-btc' : '') + '">';
-      html += badge;
-      html += '<span class="rank-mark">' + a.mark + '</span>';
-      html += '<div class="rank-info"><div class="rank-name">' + esc(a.name) +
-              (a.live ? ' <span class="rank-live-dot" title="实时"></span>' : '') + '</div>';
-      html += '<div class="rank-bar"><span style="width:' + barW + '%"></span></div></div>';
-      html += '<div class="rank-cap">' + fmtCapCN(a.cap) + '<div class="rank-tag">' + esc(a.tag) + '</div></div>';
-      html += '</div>';
+      html += '<div class="rank-row' + (a.isBTC ? ' is-btc' : '') + '">' + badge +
+              '<span class="rank-mark">' + a.mark + '</span>' +
+              '<div class="rank-info"><div class="rank-name">' + esc(a.name) +
+              (a.live ? ' <span class="rank-live-dot" title="实时/日更"></span>' : '') + '</div>' +
+              '<div class="rank-bar"><span style="width:' + barW + '%"></span></div></div>' +
+              '<div class="rank-cap">' + fmtCapCN(a.cap) + '<div class="rank-tag">' + esc(a.tag) + '</div></div></div>';
     });
     document.getElementById("rank-list").innerHTML = html;
     document.getElementById("rank-section").style.display = "block";
   }
+  function loadMetals() {
+    function one(sym, key) {
+      return fetch("https://api.gold-api.com/price/" + sym)
+        .then(function(r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function(d) { if (d && d.price) state[key] = d.price; })
+        .catch(function() {});
+    }
+    Promise.all([one("XAU", "goldPrice"), one("XAG", "silverPrice")]).then(renderRank);
+  }
 
-  // 用 sparkline 数据画一条迷你走势 SVG（涨绿跌红）
+  // ============ 主流币卡片 ============
   function sparkline(prices, up) {
     if (!prices || prices.length < 2) return "";
     var w = 220, h = 44, min = Math.min.apply(null, prices), max = Math.max.apply(null, prices);
-    var range = (max - min) || 1;
-    var step = w / (prices.length - 1);
+    var range = (max - min) || 1, step = w / (prices.length - 1);
     var pts = prices.map(function(p, i) {
-      var x = (i * step).toFixed(1);
-      var y = (h - ((p - min) / range) * (h - 4) - 2).toFixed(1);
-      return x + "," + y;
+      return (i * step).toFixed(1) + "," + (h - ((p - min) / range) * (h - 4) - 2).toFixed(1);
     }).join(" ");
-    var color = up ? "#16a34a" : "#dc2626";
     return '<svg class="coin-spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
-           '<polyline fill="none" stroke="' + color + '" stroke-width="1.6" points="' + pts + '"/></svg>';
+           '<polyline fill="none" stroke="' + (up ? "#16a34a" : "#dc2626") + '" stroke-width="1.6" points="' + pts + '"/></svg>';
   }
-
-  function render(coins) {
-    var grid = document.getElementById("market-grid");
-    var html = "";
+  function renderCoins(coins) {
+    var grid = document.getElementById("market-grid"), html = "";
     coins.forEach(function(c) {
       var chg = c.price_change_percentage_24h;
       var up = (chg == null) ? true : chg >= 0;
       var chgTxt = (chg == null) ? "--" : (up ? "▲ " : "▼ ") + Math.abs(chg).toFixed(2) + "%";
+      var nick = NICK[(c.symbol || "").toLowerCase()];
       var spark = c.sparkline_in_7d ? sparkline(c.sparkline_in_7d.price, up) : "";
-      html += '<div class="coin-card">';
-      html += '<div class="coin-head">';
-      html += '<img class="coin-logo" src="' + c.image + '" srcset="/img/loading.gif" lazyload alt="" loading="lazy">';
-      html += '<div><div class="coin-name">' + c.name + '</div>';
-      html += '<div class="coin-symbol">' + c.symbol + '</div></div></div>';
-      html += '<div class="coin-price">' + fmtPrice(c.current_price) + '</div>';
-      html += '<div class="coin-change ' + (up ? "up" : "down") + '">' + chgTxt + '</div>';
-      html += spark;
-      html += '<div class="coin-cap"><span>市值</span><span>' + fmtCap(c.market_cap) + '</span></div>';
-      html += '</div>';
+      html += '<div class="coin-card"><div class="coin-head">' +
+              '<img class="coin-logo" src="' + c.image + '" srcset="/img/loading.gif" lazyload alt="" loading="lazy">' +
+              '<div><div class="coin-name">' + esc(c.name) + (nick ? ' <span class="coin-nick">“' + nick + '”</span>' : '') + '</div>' +
+              '<div class="coin-symbol">' + esc(c.symbol) + '</div></div></div>' +
+              '<div class="coin-price">' + fmtPrice(c.current_price) + '</div>' +
+              '<div class="coin-change ' + (up ? "up" : "down") + '">' + chgTxt + '</div>' + spark +
+              '<div class="coin-mood">' + mood(chg) + '</div>' +
+              '<div class="coin-cap"><span>市值</span><span>' + fmtCapCN(c.market_cap) + '</span></div></div>';
     });
     grid.innerHTML = html;
-
-    // 动态插入的 logo 不会被 Fluid 懒加载处理，手动清掉占位属性
     var imgs = grid.querySelectorAll(".coin-logo");
-    for (var i = 0; i < imgs.length; i++) {
-      imgs[i].removeAttribute("srcset");
-      imgs[i].removeAttribute("lazyload");
-    }
+    for (var i = 0; i < imgs.length; i++) { imgs[i].removeAttribute("srcset"); imgs[i].removeAttribute("lazyload"); }
 
     var btc = null, eth = null;
     coins.forEach(function(c) { if (c.id === "bitcoin") btc = c; if (c.id === "ethereum") eth = c; });
-    if (btc) renderRank(btc.market_cap, eth ? eth.market_cap : null);
+    if (btc) state.btcCap = btc.market_cap;
+    if (eth) state.ethCap = eth.market_cap;
+    renderRank();
     document.getElementById("coin-section").style.display = "block";
 
     var d = new Date();
-    document.getElementById("market-updated").textContent =
-      "更新于 " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") + ":" + String(d.getSeconds()).padStart(2, "0");
+    document.getElementById("market-updated").textContent = "更新于 " +
+      String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") + ":" + String(d.getSeconds()).padStart(2, "0");
   }
-
-  function load() {
-    fetch(API, { headers: { "Accept": "application/json" } })
-      .then(function(res) { if (!res.ok) throw new Error(res.status); return res.json(); })
+  function loadCrypto() {
+    fetch(CG_API, { headers: { "Accept": "application/json" } })
+      .then(function(r) { if (!r.ok) throw 0; return r.json(); })
       .then(function(data) {
         document.getElementById("market-loading").style.display = "none";
         document.getElementById("market-error").style.display = "none";
-        render(data);
+        renderCoins(data);
       })
       .catch(function() {
         document.getElementById("market-loading").style.display = "none";
-        if (!document.getElementById("market-grid").innerHTML) {
-          document.getElementById("market-error").style.display = "block";
-        }
+        if (!document.getElementById("market-grid").innerHTML) document.getElementById("market-error").style.display = "block";
       });
   }
 
-  document.getElementById("market-refresh").addEventListener("click", load);
-  load();
-  timer = setInterval(load, REFRESH_MS);
+  // ============ 假如当时上车 ============
+  var COIN_ZH = { bitcoin: "比特币", ethereum: "以太坊", solana: "Solana", dogecoin: "狗狗币" };
+  function calcLine(m) {
+    if (m >= 5)   return "🤯 财富自由警告，这波直接封神";
+    if (m >= 3)   return "🚀 直接起飞，早知道 all in 了";
+    if (m >= 1.5) return "😎 稳稳的幸福，小赚一笔";
+    if (m >= 1)   return "🙂 略有盈余，聊胜于无";
+    if (m >= 0.7) return "😐 亏了点，权当交学费";
+    return "😭 亏麻了，还好只是假设";
+  }
+  function runCalc() {
+    var amount = parseFloat(document.getElementById("calc-amount").value);
+    var coin = document.getElementById("calc-coin").value;
+    var days = document.getElementById("calc-when").value;
+    var whenTxt = document.getElementById("calc-when").selectedOptions[0].textContent;
+    var res = document.getElementById("calc-result");
+    if (!amount || amount <= 0) { res.innerHTML = "请输入一个大于 0 的金额 🙂"; return; }
+    res.innerHTML = "⏳ 正在穿越时空翻账本...";
+    fetch("https://api.coingecko.com/api/v3/coins/" + coin + "/market_chart?vs_currency=usd&days=" + days + "&interval=daily")
+      .then(function(r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function(d) {
+        var p = d.prices;
+        if (!p || p.length < 2) throw 0;
+        var then = p[0][1], now = p[p.length - 1][1];
+        var units = amount / then, value = units * now, mult = value / amount;
+        var profit = value - amount, up = profit >= 0;
+        res.innerHTML =
+          '<div>' + whenTxt + '花 <b>$' + amount.toLocaleString("en-US") + '</b> 买 <b>' + (COIN_ZH[coin] || coin) + '</b>（约 ' +
+          units.toLocaleString("en-US", { maximumFractionDigits: 4 }) + ' 枚，当时约 ' + fmtPrice(then) + '/枚）</div>' +
+          '<div class="calc-big ' + (up ? "up" : "down") + '">现在值 $' + value.toLocaleString("en-US", { maximumFractionDigits: 0 }) +
+          '（' + (up ? "赚了 " + mult.toFixed(2) + " 倍" : "亏了 " + ((1 - mult) * 100).toFixed(1) + "%") + '）</div>' +
+          '<div class="calc-line">' + calcLine(mult) + '</div>';
+      })
+      .catch(function() { res.innerHTML = "😵 数据拉取失败，稍后再试试。"; });
+  }
+
+  // ============ 启动 ============
+  function refreshAll() { loadCrypto(); loadMetals(); loadFng(); }
+  document.getElementById("market-refresh").addEventListener("click", refreshAll);
+  document.getElementById("calc-btn").addEventListener("click", runCalc);
+  refreshAll();
+  timer = setInterval(refreshAll, REFRESH_MS);
   window.addEventListener("pagehide", function() { if (timer) clearInterval(timer); });
 })();
 </script>
