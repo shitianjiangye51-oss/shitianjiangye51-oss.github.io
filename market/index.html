@@ -26,8 +26,8 @@
 <meta property="og:site_name" content="严亨明的博客">
 <meta property="og:description" content="加密行情实验室 · 恐惧贪婪指数 · 全球资产市值排行榜 · 假如当时上车计算器">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-07-21T16:21:22.127Z">
-<meta property="article:modified_time" content="2026-07-21T16:21:22.127Z">
+<meta property="article:published_time" content="2026-07-21T16:27:27.545Z">
+<meta property="article:modified_time" content="2026-07-21T16:27:27.545Z">
 <meta property="article:author" content="严亨明">
 <meta property="article:tag" content="严亨明, 博客, 技术, 生活, 随笔">
 <meta name="twitter:card" content="summary_large_image">
@@ -549,6 +549,21 @@ html[data-user-color-scheme="dark"] .coin-price { color:#e2e8f0; }
 .coin-mood { margin-top:.6rem; font-size:.82rem; color:#718096; }
 html[data-user-color-scheme="dark"] .coin-mood { color:#9aa4b0; }
 .coin-cap { margin-top:.6rem; font-size:.78rem; color:#a0aec0; display:flex; justify-content:space-between; }
+.coin-logo { cursor:pointer; transition:transform .15s; }
+.coin-logo:active { transform:scale(.85); }
+
+/* ---------- 价格跳动闪动 ---------- */
+@keyframes flashUp { 0%{ background:rgba(22,163,74,.20); } 100%{ background:transparent; } }
+@keyframes flashDown { 0%{ background:rgba(220,38,38,.20); } 100%{ background:transparent; } }
+.coin-price.up-flash { animation:flashUp .8s ease-out; border-radius:6px; }
+.coin-price.down-flash { animation:flashDown .8s ease-out; border-radius:6px; }
+
+/* ---------- 彩蛋：火箭 + 隐藏台词 ---------- */
+.rocket-fly { position:fixed; bottom:-48px; pointer-events:none; z-index:9998; will-change:transform,opacity; animation:rocketUp linear forwards; }
+@keyframes rocketUp { 0%{ transform:translateY(0) rotate(-12deg); opacity:1; } 90%{ opacity:1; } 100%{ transform:translateY(-112vh) rotate(-12deg); opacity:0; } }
+.egg-toast { position:fixed; left:50%; bottom:38px; transform:translateX(-50%) translateY(18px); background:#2d3748; color:#fff; padding:.7rem 1.2rem; border-radius:24px; font-size:.9rem; box-shadow:0 8px 26px rgba(0,0,0,.28); opacity:0; transition:opacity .3s, transform .3s; z-index:9999; pointer-events:none; max-width:86vw; text-align:center; }
+.egg-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+html[data-user-color-scheme="dark"] .egg-toast { background:#0f1419; border:1px solid #435266; }
 </style>
 
 <script>
@@ -590,6 +605,56 @@ html[data-user-color-scheme="dark"] .coin-mood { color:#9aa4b0; }
 
   // 全局状态：加密与金银异步返回，任一到达都重绘排行榜
   var state = { btcCap: null, ethCap: null, goldPrice: null, silverPrice: null };
+
+  // 价格记忆 + 彩蛋状态
+  var prevPrices = {};
+  var firstCoinLoad = true;
+  var lastHourEgg = -1;
+  var clickCount = {};
+  var SECRETS = [
+    "🤫 隐藏台词：不懂的不碰，碰了别哭",
+    "🥚 挖到彩蛋！记住——本金安全永远排第一",
+    "🚀 To the moon 只是口号，活着才是本事",
+    "🐂🐻 牛熊只是情绪，仓位才是命",
+    "💎 钻石手也扛不住杠杆爆仓，慎用合约",
+    "😂 K 线会骗人，但你的钱包不会说谎",
+    "🧘 涨了别飘，跌了别慌，这页面只是给你看个乐"
+  ];
+
+  function showToast(msg) {
+    var t = document.getElementById("egg-toast");
+    if (!t) { t = document.createElement("div"); t.id = "egg-toast"; t.className = "egg-toast"; document.body.appendChild(t); }
+    t.textContent = msg; t.classList.add("show");
+    clearTimeout(t._timer); t._timer = setTimeout(function() { t.classList.remove("show"); }, 2600);
+  }
+  function launchRockets(n) {
+    for (var i = 0; i < n; i++) {
+      (function(k) {
+        setTimeout(function() {
+          var r = document.createElement("div");
+          r.className = "rocket-fly"; r.textContent = "🚀";
+          r.style.left = (4 + Math.random() * 90) + "vw";
+          var dur = 2.2 + Math.random() * 1.4;
+          r.style.animationDuration = dur.toFixed(2) + "s";
+          r.style.fontSize = (1.3 + Math.random() * 1.3).toFixed(2) + "rem";
+          document.body.appendChild(r);
+          setTimeout(function() { if (r.parentNode) r.parentNode.removeChild(r); }, dur * 1000 + 300);
+        }, k * 110);
+      })(i);
+    }
+  }
+  // 价格数字滚动动画
+  function rollNumber(el, from, to) {
+    if (from == null || from === to || !window.requestAnimationFrame) { el.textContent = fmtPrice(to); return; }
+    var start = performance.now(), dur = 650;
+    function frame(now) {
+      var t = Math.min(1, (now - start) / dur);
+      var ease = 1 - Math.pow(1 - t, 3);
+      el.textContent = fmtPrice(from + (to - from) * ease);
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
 
   function fmtPrice(v) {
     if (v == null) return "--";
@@ -720,10 +785,10 @@ html[data-user-color-scheme="dark"] .coin-mood { color:#9aa4b0; }
       var nick = NICK[(c.symbol || "").toLowerCase()];
       var spark = c.sparkline_in_7d ? sparkline(c.sparkline_in_7d.price, up) : "";
       html += '<div class="coin-card"><div class="coin-head">' +
-              '<img class="coin-logo" src="' + c.image + '" srcset="/img/loading.gif" lazyload alt="" loading="lazy">' +
+              '<img class="coin-logo" src="' + c.image + '" srcset="/img/loading.gif" lazyload alt="" loading="lazy" data-id="' + esc(c.id) + '">' +
               '<div><div class="coin-name">' + esc(c.name) + (nick ? ' <span class="coin-nick">“' + nick + '”</span>' : '') + '</div>' +
               '<div class="coin-symbol">' + esc(c.symbol) + '</div></div></div>' +
-              '<div class="coin-price">' + fmtPrice(c.current_price) + '</div>' +
+              '<div class="coin-price" data-id="' + esc(c.id) + '">' + fmtPrice(c.current_price) + '</div>' +
               '<div class="coin-change ' + (up ? "up" : "down") + '">' + chgTxt + '</div>' + spark +
               '<div class="coin-mood">' + mood(chg) + '</div>' +
               '<div class="coin-cap"><span>市值</span><span>' + fmtCapCN(c.market_cap) + '</span></div></div>';
@@ -731,6 +796,29 @@ html[data-user-color-scheme="dark"] .coin-mood { color:#9aa4b0; }
     grid.innerHTML = html;
     var imgs = grid.querySelectorAll(".coin-logo");
     for (var i = 0; i < imgs.length; i++) { imgs[i].removeAttribute("srcset"); imgs[i].removeAttribute("lazyload"); }
+
+    // 价格跳动：对比上一次价格，变了就闪一下 + 数字滚动
+    coins.forEach(function(c) {
+      var pd = grid.querySelector('.coin-price[data-id="' + c.id + '"]');
+      if (!pd) return;
+      var prev = prevPrices[c.id];
+      if (prev != null && prev !== c.current_price) {
+        var cls = c.current_price > prev ? "up-flash" : "down-flash";
+        pd.classList.remove("up-flash", "down-flash");
+        void pd.offsetWidth;
+        pd.classList.add(cls);
+        rollNumber(pd, prev, c.current_price);
+      }
+      prevPrices[c.id] = c.current_price;
+    });
+
+    // 彩蛋：首次加载遇到大盘暴涨 / 整点，飘一串火箭
+    var maxChg = 0;
+    coins.forEach(function(c) { if (c.price_change_percentage_24h != null && c.price_change_percentage_24h > maxChg) maxChg = c.price_change_percentage_24h; });
+    if (firstCoinLoad && maxChg >= 8) launchRockets(12);
+    firstCoinLoad = false;
+    var nowD = new Date();
+    if (nowD.getMinutes() === 0 && nowD.getHours() !== lastHourEgg) { lastHourEgg = nowD.getHours(); launchRockets(6); }
 
     var btc = null, eth = null;
     coins.forEach(function(c) { if (c.id === "bitcoin") btc = c; if (c.id === "ethereum") eth = c; });
@@ -797,6 +885,17 @@ html[data-user-color-scheme="dark"] .coin-mood { color:#9aa4b0; }
   function refreshAll() { loadCrypto(); loadMetals(); loadFng(); }
   document.getElementById("market-refresh").addEventListener("click", refreshAll);
   document.getElementById("calc-btn").addEventListener("click", runCalc);
+
+  // 彩蛋：连点币种 logo 弹隐藏台词，连点够次数飘火箭
+  document.getElementById("market-grid").addEventListener("click", function(e) {
+    var logo = e.target && e.target.closest ? e.target.closest(".coin-logo") : null;
+    if (!logo) return;
+    var id = logo.getAttribute("data-id") || "x";
+    clickCount[id] = (clickCount[id] || 0) + 1;
+    showToast(SECRETS[Math.floor(Math.random() * SECRETS.length)]);
+    if (clickCount[id] % 6 === 0) launchRockets(14);
+  });
+
   refreshAll();
   timer = setInterval(refreshAll, REFRESH_MS);
   window.addEventListener("pagehide", function() { if (timer) clearInterval(timer); });
