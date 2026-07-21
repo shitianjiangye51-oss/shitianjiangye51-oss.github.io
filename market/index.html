@@ -19,20 +19,22 @@
   <meta name="author" content="严亨明">
   <meta name="keywords" content="严亨明, 博客, 技术, 生活, 随笔">
   
-    <meta name="description" content="一个使用 Hexo + Fluid 搭建的个人博客">
+    <meta name="description" content="主流加密货币实时行情 · 数据来自 CoinGecko">
 <meta property="og:type" content="website">
-<meta property="og:title" content="标签">
-<meta property="og:url" content="https://shitianjiangye51-oss.github.io/tags/index.html">
+<meta property="og:title" content="加密行情">
+<meta property="og:url" content="https://shitianjiangye51-oss.github.io/market/index.html">
 <meta property="og:site_name" content="严亨明的博客">
-<meta property="og:description" content="一个使用 Hexo + Fluid 搭建的个人博客">
+<meta property="og:description" content="主流加密货币实时行情 · 数据来自 CoinGecko">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-07-21T15:07:49.459Z">
+<meta property="article:modified_time" content="2026-07-21T15:07:49.459Z">
 <meta property="article:author" content="严亨明">
 <meta property="article:tag" content="严亨明, 博客, 技术, 生活, 随笔">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>标签 - 严亨明的博客</title>
+  <title>加密行情 - 严亨明的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -91,7 +93,7 @@
   <header>
     
 
-<div class="header-inner" style="height: 80vh;">
+<div class="header-inner" style="height: 60vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -352,17 +354,13 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="标签"></span>
+            <span id="subtitle" data-typed-text="加密行情"></span>
           
         </div>
 
         
       </div>
 
-      
-        <div class="scroll-down-bar">
-          <i class="iconfont icon-arrowdown"></i>
-        </div>
       
     </div>
   </div>
@@ -385,9 +383,158 @@
               <div class="col-12 col-md-10 m-auto">
                 
 
-<div class="text-center tagcloud">
-  <a href="/tags/Hexo/" style="font-size: 15px; color: #bbe">Hexo</a> <a href="/tags/Walk-Forward/" style="font-size: 15px; color: #bbe">Walk-Forward</a> <a href="/tags/%E5%8A%A0%E5%AF%86%E8%B4%A7%E5%B8%81/" style="font-size: 15px; color: #bbe">加密货币</a> <a href="/tags/%E5%9B%A0%E5%AD%90%E7%A0%94%E7%A9%B6/" style="font-size: 15px; color: #bbe">因子研究</a> <a href="/tags/%E9%87%8F%E5%8C%96%E4%BA%A4%E6%98%93/" style="font-size: 15px; color: #bbe">量化交易</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 15px; color: #bbe">随笔</a>
+<article class="page-content">
+  <div id="market-app">
+  <div class="market-header">
+    <p class="market-intro">主流加密货币实时行情，数据来自 CoinGecko 公开接口，每 60 秒自动刷新。</p>
+    <div class="market-toolbar">
+      <span id="market-updated" class="market-updated"></span>
+      <button id="market-refresh" class="market-refresh" title="立即刷新">
+        ↻ 刷新
+      </button>
+    </div>
+  </div>
+  <div id="market-loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-3" style="color:#718096;">正在加载实时行情...</p>
+  </div>
+  <div id="market-grid" class="market-grid"></div>
+  <div id="market-error" class="text-center py-5" style="display:none;">
+    <p style="color:#e53e3e;">行情加载失败，请稍后点击「刷新」重试。</p>
+  </div>
 </div>
+
+<style>
+.market-intro { text-align:center; color:#718096; font-size:1.05rem; margin-bottom:1rem; }
+.market-toolbar { display:flex; justify-content:center; align-items:center; gap:1rem; margin-bottom:2rem; }
+.market-updated { color:#a0aec0; font-size:.85rem; }
+.market-refresh { border:1px solid #e2e8f0; background:#fff; color:#4a5568; border-radius:20px; padding:.3rem 1rem; font-size:.85rem; cursor:pointer; transition:all .2s; }
+.market-refresh:hover { background:#5b7cfa; color:#fff; border-color:#5b7cfa; }
+html[data-user-color-scheme="dark"] .market-refresh { background:#252d38; color:#a7a9ad; border-color:#435266; }
+html[data-user-color-scheme="dark"] .market-refresh:hover { background:#5b7cfa; color:#fff; }
+
+.market-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:1.2rem; }
+.coin-card { background:#fff; border-radius:14px; padding:1.3rem; box-shadow:0 2px 12px rgba(0,0,0,.08); transition:transform .2s, box-shadow .2s; }
+.coin-card:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,.12); }
+html[data-user-color-scheme="dark"] .coin-card { background:#252d38; }
+
+.coin-head { display:flex; align-items:center; margin-bottom:.9rem; }
+.coin-logo { width:36px; height:36px; border-radius:50%; margin-right:.7rem; background:#edf2f7; flex-shrink:0; }
+.coin-name { font-weight:600; color:#1a202c; font-size:1.05rem; line-height:1.2; }
+html[data-user-color-scheme="dark"] .coin-name { color:#c4c6c9; }
+.coin-symbol { color:#a0aec0; font-size:.8rem; text-transform:uppercase; }
+
+.coin-price { font-size:1.6rem; font-weight:700; color:#2d3748; margin-bottom:.3rem; letter-spacing:-.5px; }
+html[data-user-color-scheme="dark"] .coin-price { color:#e2e8f0; }
+.coin-change { font-size:.9rem; font-weight:600; display:inline-flex; align-items:center; gap:.25rem; }
+.coin-change.up { color:#16a34a; }
+.coin-change.down { color:#dc2626; }
+
+.coin-spark { margin-top:.8rem; height:44px; width:100%; }
+.coin-cap { margin-top:.6rem; font-size:.78rem; color:#a0aec0; display:flex; justify-content:space-between; }
+</style>
+
+<script>
+(function() {
+  var COINS = "bitcoin,ethereum,solana,ripple,cardano,dogecoin,avalanche-2,chainlink,litecoin,polkadot";
+  var API = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=" + COINS +
+            "&order=market_cap_desc&sparkline=true&price_change_percentage=24h";
+  var REFRESH_MS = 60000;
+  var timer = null;
+
+  function fmtPrice(v) {
+    if (v == null) return "--";
+    if (v >= 1000) return "$" + v.toLocaleString("en-US", { maximumFractionDigits: 0 });
+    if (v >= 1) return "$" + v.toLocaleString("en-US", { maximumFractionDigits: 2 });
+    return "$" + v.toLocaleString("en-US", { maximumFractionDigits: 5 });
+  }
+
+  function fmtCap(v) {
+    if (v == null) return "--";
+    if (v >= 1e12) return "$" + (v / 1e12).toFixed(2) + "T";
+    if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(2) + "M";
+    return "$" + v.toFixed(0);
+  }
+
+  // 用 sparkline 数据画一条迷你走势 SVG（涨绿跌红）
+  function sparkline(prices, up) {
+    if (!prices || prices.length < 2) return "";
+    var w = 220, h = 44, min = Math.min.apply(null, prices), max = Math.max.apply(null, prices);
+    var range = (max - min) || 1;
+    var step = w / (prices.length - 1);
+    var pts = prices.map(function(p, i) {
+      var x = (i * step).toFixed(1);
+      var y = (h - ((p - min) / range) * (h - 4) - 2).toFixed(1);
+      return x + "," + y;
+    }).join(" ");
+    var color = up ? "#16a34a" : "#dc2626";
+    return '<svg class="coin-spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+           '<polyline fill="none" stroke="' + color + '" stroke-width="1.6" points="' + pts + '"/></svg>';
+  }
+
+  function render(coins) {
+    var grid = document.getElementById("market-grid");
+    var html = "";
+    coins.forEach(function(c) {
+      var chg = c.price_change_percentage_24h;
+      var up = (chg == null) ? true : chg >= 0;
+      var chgTxt = (chg == null) ? "--" : (up ? "▲ " : "▼ ") + Math.abs(chg).toFixed(2) + "%";
+      var spark = c.sparkline_in_7d ? sparkline(c.sparkline_in_7d.price, up) : "";
+      html += '<div class="coin-card">';
+      html += '<div class="coin-head">';
+      html += '<img class="coin-logo" src="' + c.image + '" srcset="/img/loading.gif" lazyload alt="" loading="lazy">';
+      html += '<div><div class="coin-name">' + c.name + '</div>';
+      html += '<div class="coin-symbol">' + c.symbol + '</div></div></div>';
+      html += '<div class="coin-price">' + fmtPrice(c.current_price) + '</div>';
+      html += '<div class="coin-change ' + (up ? "up" : "down") + '">' + chgTxt + '</div>';
+      html += spark;
+      html += '<div class="coin-cap"><span>市值</span><span>' + fmtCap(c.market_cap) + '</span></div>';
+      html += '</div>';
+    });
+    grid.innerHTML = html;
+
+    // 动态插入的 logo 不会被 Fluid 懒加载处理，手动清掉占位属性
+    var imgs = grid.querySelectorAll(".coin-logo");
+    for (var i = 0; i < imgs.length; i++) {
+      imgs[i].removeAttribute("srcset");
+      imgs[i].removeAttribute("lazyload");
+    }
+
+    var d = new Date();
+    document.getElementById("market-updated").textContent =
+      "更新于 " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") + ":" + String(d.getSeconds()).padStart(2, "0");
+  }
+
+  function load() {
+    fetch(API, { headers: { "Accept": "application/json" } })
+      .then(function(res) { if (!res.ok) throw new Error(res.status); return res.json(); })
+      .then(function(data) {
+        document.getElementById("market-loading").style.display = "none";
+        document.getElementById("market-error").style.display = "none";
+        render(data);
+      })
+      .catch(function() {
+        document.getElementById("market-loading").style.display = "none";
+        if (!document.getElementById("market-grid").innerHTML) {
+          document.getElementById("market-error").style.display = "block";
+        }
+      });
+  }
+
+  document.getElementById("market-refresh").addEventListener("click", load);
+  load();
+  timer = setInterval(load, REFRESH_MS);
+  window.addEventListener("pagehide", function() { if (timer) clearInterval(timer); });
+})();
+</script>
+
+
+  
+
+</article>
+
+
 
               </div>
             </div>
