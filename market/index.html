@@ -26,8 +26,8 @@
 <meta property="og:site_name" content="严亨明的博客">
 <meta property="og:description" content="主流加密货币实时行情 · 数据来自 CoinGecko">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-07-21T15:07:49.459Z">
-<meta property="article:modified_time" content="2026-07-21T15:07:49.459Z">
+<meta property="article:published_time" content="2026-07-21T15:38:36.049Z">
+<meta property="article:modified_time" content="2026-07-21T15:38:36.049Z">
 <meta property="article:author" content="严亨明">
 <meta property="article:tag" content="严亨明, 博客, 技术, 生活, 随笔">
 <meta name="twitter:card" content="summary_large_image">
@@ -394,11 +394,25 @@
       </button>
     </div>
   </div>
+
   <div id="market-loading" class="text-center py-5">
     <div class="spinner-border text-primary" role="status"></div>
     <p class="mt-3" style="color:#718096;">正在加载实时行情...</p>
   </div>
-  <div id="market-grid" class="market-grid"></div>
+
+  <!-- 全球资产市值排行榜 -->
+  <section id="rank-section" class="rank-section" style="display:none;">
+    <h2 class="section-title">🌍 全球资产市值排行榜</h2>
+    <div id="rank-headline" class="rank-headline"></div>
+    <div id="rank-list" class="rank-list"></div>
+    <p class="rank-note">💡 加密资产为 CoinGecko 实时数据；传统资产（黄金 / 白银 / 股票）为参考快照（截至 2026 年 7 月），仅供娱乐对比，非投资依据。</p>
+  </section>
+
+  <section id="coin-section" style="display:none;">
+    <h2 class="section-title">💰 主流币实时行情</h2>
+    <div id="market-grid" class="market-grid"></div>
+  </section>
+
   <div id="market-error" class="text-center py-5" style="display:none;">
     <p style="color:#e53e3e;">行情加载失败，请稍后点击「刷新」重试。</p>
   </div>
@@ -432,6 +446,45 @@ html[data-user-color-scheme="dark"] .coin-price { color:#e2e8f0; }
 
 .coin-spark { margin-top:.8rem; height:44px; width:100%; }
 .coin-cap { margin-top:.6rem; font-size:.78rem; color:#a0aec0; display:flex; justify-content:space-between; }
+
+/* ---------- 全球资产市值排行榜 ---------- */
+.section-title { font-size:1.3rem; font-weight:700; color:#2d3748; margin:2.5rem 0 1.2rem; text-align:center; }
+html[data-user-color-scheme="dark"] .section-title { color:#e2e8f0; }
+
+.rank-headline { text-align:center; font-size:1.05rem; color:#4a5568; background:#f7f9fc; border-radius:12px; padding:1rem 1.2rem; margin-bottom:1.2rem; line-height:1.7; }
+.rank-headline b { color:#f7931a; }
+html[data-user-color-scheme="dark"] .rank-headline { background:#252d38; color:#a7a9ad; }
+.rank-hot { color:#16a34a; font-weight:600; }
+.rank-sub { margin-top:.5rem; font-size:.85rem; color:#a0aec0; }
+
+.rank-list { display:flex; flex-direction:column; gap:.5rem; }
+.rank-row { display:flex; align-items:center; gap:.8rem; background:#fff; border-radius:12px; padding:.7rem 1rem; box-shadow:0 2px 10px rgba(0,0,0,.05); transition:transform .15s; }
+.rank-row:hover { transform:translateX(3px); }
+html[data-user-color-scheme="dark"] .rank-row { background:#252d38; }
+.rank-row.is-btc { background:linear-gradient(90deg,#fff7ed,#fff); border:1px solid #f7931a; }
+html[data-user-color-scheme="dark"] .rank-row.is-btc { background:linear-gradient(90deg,#3a2f1e,#252d38); border-color:#f7931a; }
+
+.rank-num, .rank-medal { flex-shrink:0; width:26px; height:26px; line-height:26px; text-align:center; border-radius:50%; font-size:.8rem; font-weight:700; color:#718096; background:#edf2f7; }
+html[data-user-color-scheme="dark"] .rank-num { background:#374151; color:#a7a9ad; }
+.rank-medal { color:#fff; }
+.rank-medal.m1 { background:#f6ad37; }
+.rank-medal.m2 { background:#b0b7c3; }
+.rank-medal.m3 { background:#cd7f32; }
+
+.rank-mark { flex-shrink:0; width:30px; text-align:center; font-size:1.3rem; font-weight:700; }
+.rank-info { flex:1; min-width:0; }
+.rank-name { font-weight:600; color:#2d3748; font-size:.98rem; display:flex; align-items:center; gap:.4rem; }
+html[data-user-color-scheme="dark"] .rank-name { color:#e2e8f0; }
+.rank-live-dot { width:7px; height:7px; border-radius:50%; background:#16a34a; display:inline-block; animation:rankPulse 1.5s infinite; }
+@keyframes rankPulse { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+.rank-bar { margin-top:.35rem; height:5px; background:#edf2f7; border-radius:3px; overflow:hidden; }
+html[data-user-color-scheme="dark"] .rank-bar { background:#374151; }
+.rank-bar span { display:block; height:100%; background:linear-gradient(90deg,#5b7cfa,#7c9cff); border-radius:3px; }
+.rank-row.is-btc .rank-bar span { background:linear-gradient(90deg,#f7931a,#ffb454); }
+.rank-cap { flex-shrink:0; text-align:right; font-weight:700; color:#2d3748; font-size:.95rem; }
+html[data-user-color-scheme="dark"] .rank-cap { color:#e2e8f0; }
+.rank-tag { font-size:.7rem; color:#a0aec0; font-weight:400; margin-top:.1rem; }
+.rank-note { text-align:center; font-size:.8rem; color:#a0aec0; margin-top:1rem; }
 </style>
 
 <script>
@@ -441,6 +494,21 @@ html[data-user-color-scheme="dark"] .coin-price { color:#e2e8f0; }
             "&order=market_cap_desc&sparkline=true&price_change_percentage=24h";
   var REFRESH_MS = 60000;
   var timer = null;
+
+  // 传统资产市值参考快照（美元）。股票/贵金属无免费实时接口，
+  // 这里用近期公开数据的估算值，需要更新时改下面的数字即可。
+  var TRAD_ASSETS = [
+    { name: "黄金",     tag: "贵金属", mark: "🟡", cap: 18.5e12 },
+    { name: "英伟达",   tag: "美股",   mark: "🎮", cap: 3.9e12 },
+    { name: "苹果",     tag: "美股",   mark: "🍎", cap: 3.5e12 },
+    { name: "微软",     tag: "美股",   mark: "🪟", cap: 3.4e12 },
+    { name: "Alphabet", tag: "美股",   mark: "🔍", cap: 2.5e12 },
+    { name: "亚马逊",   tag: "美股",   mark: "📦", cap: 2.4e12 },
+    { name: "白银",     tag: "贵金属", mark: "⚪", cap: 1.9e12 },
+    { name: "沙特阿美", tag: "沙特股", mark: "🛢️", cap: 1.8e12 },
+    { name: "Meta",     tag: "美股",   mark: "📘", cap: 1.6e12 }
+  ];
+  var RANK_KEY = "market-btc-rank";
 
   function fmtPrice(v) {
     if (v == null) return "--";
@@ -455,6 +523,69 @@ html[data-user-color-scheme="dark"] .coin-price { color:#e2e8f0; }
     if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
     if (v >= 1e6) return "$" + (v / 1e6).toFixed(2) + "M";
     return "$" + v.toFixed(0);
+  }
+
+  // 排行榜用的中文市值格式（万亿）
+  function fmtCapCN(v) {
+    if (v == null) return "--";
+    return "$" + (v / 1e12).toFixed(2) + " 万亿";
+  }
+
+  function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+  // 渲染「全球资产市值排行榜」：加密资产实时，传统资产用快照，合并后重排
+  function renderRank(btcCap, ethCap) {
+    if (btcCap == null) return;
+    var list = TRAD_ASSETS.slice();
+    list.push({ name: "比特币", tag: "加密货币", mark: "₿", cap: btcCap, isBTC: true, live: true });
+    if (ethCap != null) list.push({ name: "以太坊", tag: "加密货币", mark: "Ξ", cap: ethCap, live: true });
+    list.sort(function(a, b) { return b.cap - a.cap; });
+
+    var maxCap = list[0].cap;
+    var idx = -1, goldCap = 18.5e12;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].isBTC) idx = i;
+      if (list[i].name === "黄金") goldCap = list[i].cap;
+    }
+    var rank = idx + 1;
+    var above = list[idx - 1];
+    var below = list[idx + 1];
+
+    // 头条文案：优先「超越了谁」，否则「还差几 %」
+    var prev = parseInt(localStorage.getItem(RANK_KEY), 10);
+    var headline;
+    if (!isNaN(prev) && rank < prev && below) {
+      headline = '<span class="rank-hot">🎉 BTC 排名上升！刚刚超越了 <b>' + esc(below.name) +
+                 '</b>，现居全球第 <b>' + rank + '</b> 大资产</span>';
+    } else if (above) {
+      var gap = (above.cap - btcCap) / btcCap * 100;
+      headline = 'BTC 现居全球第 <b>' + rank + '</b> 大资产，距离超越 <b>' + esc(above.name) +
+                 '</b> 还差 <b>' + gap.toFixed(1) + '%</b>';
+    } else {
+      headline = '👑 BTC 已经是全球市值第一的资产！';
+    }
+    headline += '<div class="rank-sub">BTC 市值 ≈ 黄金的 <b>' + (btcCap / goldCap * 100).toFixed(1) +
+                '%</b>，登顶黄金还需上涨 <b>' + ((goldCap - btcCap) / btcCap * 100).toFixed(0) + '%</b></div>';
+    localStorage.setItem(RANK_KEY, rank);
+    document.getElementById("rank-headline").innerHTML = headline;
+
+    var html = "";
+    list.forEach(function(a, i) {
+      var r = i + 1;
+      var badge = r <= 3 ? '<span class="rank-medal m' + r + '">' + r + '</span>'
+                         : '<span class="rank-num">' + r + '</span>';
+      var barW = Math.max(3, a.cap / maxCap * 100).toFixed(1);
+      html += '<div class="rank-row' + (a.isBTC ? ' is-btc' : '') + '">';
+      html += badge;
+      html += '<span class="rank-mark">' + a.mark + '</span>';
+      html += '<div class="rank-info"><div class="rank-name">' + esc(a.name) +
+              (a.live ? ' <span class="rank-live-dot" title="实时"></span>' : '') + '</div>';
+      html += '<div class="rank-bar"><span style="width:' + barW + '%"></span></div></div>';
+      html += '<div class="rank-cap">' + fmtCapCN(a.cap) + '<div class="rank-tag">' + esc(a.tag) + '</div></div>';
+      html += '</div>';
+    });
+    document.getElementById("rank-list").innerHTML = html;
+    document.getElementById("rank-section").style.display = "block";
   }
 
   // 用 sparkline 数据画一条迷你走势 SVG（涨绿跌红）
@@ -500,6 +631,11 @@ html[data-user-color-scheme="dark"] .coin-price { color:#e2e8f0; }
       imgs[i].removeAttribute("srcset");
       imgs[i].removeAttribute("lazyload");
     }
+
+    var btc = null, eth = null;
+    coins.forEach(function(c) { if (c.id === "bitcoin") btc = c; if (c.id === "ethereum") eth = c; });
+    if (btc) renderRank(btc.market_cap, eth ? eth.market_cap : null);
+    document.getElementById("coin-section").style.display = "block";
 
     var d = new Date();
     document.getElementById("market-updated").textContent =
