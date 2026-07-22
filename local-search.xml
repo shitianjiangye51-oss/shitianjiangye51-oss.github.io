@@ -4,6 +4,37 @@
   
   
   <entry>
+    <title>给静态博客接实时加密行情：一次撞上两堵墙后撤退的复盘</title>
+    <link href="/2026/07/22/static-blog-crypto-ticker/"/>
+    <url>/2026/07/22/static-blog-crypto-ticker/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>想给纯静态的博客加一个「会说人话」的实时加密行情页，结果撞上了两堵墙——一堵是国内的网络长城（GFW），一堵是浏览器的同源策略（CORS）。这是一次从兴致勃勃到坦然撤退的完整复盘。</p></blockquote><h2 id="一句话结论"><a href="#一句话结论" class="headerlink" title="一句话结论"></a>一句话结论</h2><p><strong>对一个纯静态前端来说，”免费 + 无密钥 + 允许浏览器直连 + 国内可访问”的加密行情 API，客观上不存在。</strong> 不是没找到，是这四个条件的交集是空集。最后我把整个行情页下掉了——但过程里踩的坑值得记下来。</p><h2 id="起点：一个想「说人话」的行情页"><a href="#起点：一个想「说人话」的行情页" class="headerlink" title="起点：一个想「说人话」的行情页"></a>起点：一个想「说人话」的行情页</h2><p>最初的想法很简单：在博客上放一个实时加密行情页，别做成冷冰冰的报价表，要好玩、会说人话。做出来的版本包含四个板块：</p><ul><li><strong>😱 恐惧与贪婪指数</strong>：半圆 SVG 仪表盘 + 指针，配一句应景吐槽；</li><li><strong>🌍 全球资产市值排行榜</strong>：把 BTC、ETH 和黄金、白银、英伟达、苹果等放一起排队，看比特币现在全球第几；</li><li><strong>🕹️ 假如当时上车</strong>：输入「一年前花 1000 刀买 BTC」，算出现在赚了几倍还是亏麻了；</li><li><strong>💰 主流币实时行情</strong>：10 张币卡，带走势小图和拟人化心情文案（「🚀 起飞了，追还是不追？」）。</li></ul><p>技术上是一个自包含的 Markdown 页：内联 <code>&lt;style&gt;</code> + 内联 <code>&lt;script&gt;</code>，浏览器直接 <code>fetch</code> 第三方 API。<strong>关键约束就藏在这里</strong>——静态站没有后端，所有数据必须由<strong>浏览器直接</strong>去拉。而浏览器直连第三方接口，必须过 CORS 这一关。</p><h2 id="第一堵墙：GFW-——-CoinGecko-在国内加载不出来"><a href="#第一堵墙：GFW-——-CoinGecko-在国内加载不出来" class="headerlink" title="第一堵墙：GFW —— CoinGecko 在国内加载不出来"></a>第一堵墙：GFW —— CoinGecko 在国内加载不出来</h2><p>第一版用的是 CoinGecko，海外开发常用、数据全、有正确 CORS。但用户在国内一打开：<strong>转圈半天，价格出不来</strong>。原因很直白——CoinGecko 在国内被墙，请求要么超时要么被重置。</p><p>于是目标变成：<strong>换一个国内能直连的数据源</strong>。听起来只是换个 URL，实际是噩梦的开始。</p><h2 id="第二堵墙：CORS-——-有数据-≠-能用"><a href="#第二堵墙：CORS-——-有数据-≠-能用" class="headerlink" title="第二堵墙：CORS —— 有数据 ≠ 能用"></a>第二堵墙：CORS —— 有数据 ≠ 能用</h2><p>我逐个实测了主流交易所的接口，判定标准有两条：<strong>①国内网络能不能连通；②响应头有没有正确的 <code>Access-Control-Allow-Origin</code></strong>。第二条最容易被忽略，却是静态站的生死线。</p><table><thead><tr><th>数据源</th><th>国内连通</th><th>CORS 头</th><th>能否前端直连</th><th>结论</th></tr></thead><tbody><tr><td><strong>OKX</strong></td><td>时好时坏</td><td>✅ 正确回显 origin</td><td>连得上就能用</td><td>勉强可用，见下文</td></tr><tr><td><strong>Gate.io</strong></td><td>✅ 能连</td><td>❌ <strong>缺 <code>Access-Control-Allow-Origin</code></strong></td><td>被浏览器拦</td><td>有数据也白搭</td></tr><tr><td><strong>Binance</strong></td><td>❌ 被墙</td><td>—</td><td>连不上</td><td>弃用</td></tr><tr><td><strong>新浪 &#x2F; 腾讯财经</strong></td><td>✅ 能连</td><td>❌ 无 CORS 头</td><td>被浏览器拦</td><td>有价格也用不了</td></tr><tr><td><strong>CoinGecko</strong></td><td>❌ 被墙</td><td>✅ 正确</td><td>国内连不上</td><td>只能作海外回退</td></tr></tbody></table><p>Gate.io 这一栏最能说明问题：<strong>接口能返回完整的 BTC 价格，<code>curl</code> 拿得一清二楚，但浏览器里就是拿不到</strong>——因为它只给了 <code>Access-Control-Allow-Methods</code>、<code>Access-Control-Allow-Headers</code>，唯独没给最关键的 <code>Access-Control-Allow-Origin</code>，浏览器在跨域时直接把响应拦在门外。国内财经巨头新浪、腾讯的行情接口同理：数据就在那里，但它们从没打算让别的网站的前端直接调，自然不会配 CORS。</p><blockquote><p>💡 教训一：<strong><code>curl</code> 能拿到，不代表网页能拿到。</strong> 命令行没有同源策略，浏览器有。评估一个”能不能前端直连”的接口，必须看它的响应头，而不是看数据。</p></blockquote><h2 id="挣扎期：OKX-自动回退链"><a href="#挣扎期：OKX-自动回退链" class="headerlink" title="挣扎期：OKX + 自动回退链"></a>挣扎期：OKX + 自动回退链</h2><p>OKX（欧易）成了唯一勉强能打的选手——它有正确的 CORS。于是我做了一条<strong>数据源自动回退链</strong>：</p><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">SOURCES</span> = [OKX(国内优先), CoinGecko(海外回退)]<br></code></pre></td></tr></table></figure><p>按顺序尝试，谁先成功就锁定谁：国内用户走 OKX，海外&#x2F;翻墙环境走 CoinGecko。同时顺手解决了用户反馈的另外两个体验问题：</p><ul><li><strong>「刷新太慢」</strong>：给每个请求加了 <code>AbortController</code> 超时（8~9 秒）。某个源被墙时<strong>快速失败、立刻回退</strong>，而不是干等浏览器自己超时（默认可能几十秒）；</li><li><strong>「感觉跳动」</strong>：以前每次刷新都整块重建卡片 DOM，导致图片重载、布局重排，看着就”抖”。改成<strong>卡片只构建一次，之后只原地更新价格 &#x2F; 涨跌 &#x2F; 心情的文字</strong>，价格变化用数字滚动 + 涨绿跌红闪一下。顺带把依赖图片 CDN 的币种 logo 换成了<strong>纯 CSS 彩色字母徽章</strong>（图片 CDN 也可能被墙）。</li></ul><p>这一版在能连上时体验相当不错。但问题的根子没解决——</p><h2 id="撞墙时刻：OKX-也不是「国内-API」"><a href="#撞墙时刻：OKX-也不是「国内-API」" class="headerlink" title="撞墙时刻：OKX 也不是「国内 API」"></a>撞墙时刻：OKX 也不是「国内 API」</h2><p>真相是：<strong>OKX 早已退出中国大陆，<code>www.okx.com</code> 在大陆很多网络环境下同样连不上。</strong> 它有 CORS，不代表它在国内稳定可达。所谓”国内优先走 OKX”，在相当比例的用户那里依然是转圈。</p><p>至此，四个条件的交集彻底被证明是空的：</p><ul><li>国内能连的（新浪&#x2F;腾讯）→ 没 CORS，前端用不了；</li><li>有 CORS 的（CoinGecko&#x2F;OKX）→ 要么被墙，要么在国内不稳定；</li><li>Binance → 直接被墙。</li></ul><blockquote><p>💡 教训二：<strong>“有 CORS” 和 “国内可访问” 这两个属性，在免费加密行情 API 里几乎是互斥的。</strong> 合规能进国内的数据源不会开放跨域直连；开放跨域的国际接口进不了国内。</p></blockquote><h2 id="坦然撤退"><a href="#坦然撤退" class="headerlink" title="坦然撤退"></a>坦然撤退</h2><p>既然客观上不存在满足条件的接口，继续在前端硬凑只是在制造”薛定谔的行情页”——能不能看全看运气。和用户确认后，<strong>我把整个「加密行情」页连同导航入口一起下掉了</strong>。</p><p>这不是失败，是把工程判断力用在了正确的地方：<strong>当约束证明目标不可达时，及时撤退比继续堆代码更有价值。</strong></p><h2 id="真正的解法（如果一定要做）"><a href="#真正的解法（如果一定要做）" class="headerlink" title="真正的解法（如果一定要做）"></a>真正的解法（如果一定要做）</h2><p>问题的本质不是”找不到数据”，而是”静态前端不能安全地跨域直连”。所以正解是<strong>加一层自己的后端中转</strong>：</p><table><thead><tr><th>方案</th><th>做法</th><th>代价</th></tr></thead><tbody><tr><td>云函数 &#x2F; Serverless</td><td>用 Cloudflare Workers、Vercel、腾讯云函数等写个代理，服务端去拉数据（服务端没有 CORS 限制），再给自己的响应加上 CORS 头返回</td><td>需要部署，可能有额度&#x2F;冷启动</td></tr><tr><td>自建小服务</td><td>一台能同时访问数据源和国内的服务器定时抓取、缓存、对外提供带 CORS 的接口</td><td>需要服务器和运维</td></tr><tr><td>静态快照</td><td>构建时抓一次价格写进页面，牺牲实时性</td><td>数据不新鲜</td></tr></tbody></table><p>一旦有了带 CORS 的中转层，前端就能稳定拿到数据，”国内能不能连数据源”这个问题也转移到了服务端——服务端选一个自己能访问的源即可。<strong>这才是给静态站接第三方数据的正确姿势。</strong></p><hr><p><em>这次折腾最大的收获，不是做出了一个行情页，而是彻底搞懂了：<strong>静态博客接实时数据，真正的门槛是 CORS，不只是那堵网络长城。</strong> 下次再想给静态站加动态数据，我会先问一句——“这个接口，浏览器拿得到吗？”</em></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>技术笔记</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>加密货币</tag>
+      
+      <tag>前端</tag>
+      
+      <tag>CORS</tag>
+      
+      <tag>静态博客</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>用严谨方法证伪一个加密量化策略：因子发现成功，可交易策略失败</title>
     <link href="/2026/07/21/crypto-factor-system/"/>
     <url>/2026/07/21/crypto-factor-system/</url>
